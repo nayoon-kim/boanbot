@@ -3,27 +3,29 @@ import json
 import datetime
 from bs4 import BeautifulSoup
 
-urls = ["https://www.fireeye.com/blog.html", "https://googleprojectzero.blogspot.com/", "http://boannews.com/", "https://www.zdnet.com/topic/security/", "https://www.wired.com/category/security/", "https://www.forbes.com"]
+urls = ["https://www.fireeye.com/blog.html", "https://googleprojectzero.blogspot.com/", "http://boannews.com/", "https://www.zdnet.com/topic/security/", "https://www.wired.com/category/security/", "https://www.forbes.com", "https://www.dailysecu.com/news/articleList.html?sc_section_code=S1N2&view_type=sm"]
 
+# 최신 보안 뉴스
 def boannews():
-    url = "https://www.boannews.com/Default.asp"
+    url = "https://www.boannews.com/media/t_list.asp"
     webpage = requests.get(url)
     soup = BeautifulSoup(webpage.text, "html.parser")
 
-    headline_news = soup.select('#headline0 li')
-
+    headline_news = soup.select('div.news_list')
+    # print(headline_news)
     result = dict()
-    for i, mn in enumerate(headline_news):
+    for i, hn in enumerate(headline_news):
         headline = "headline" + str(i + 1)
         result[headline] = dict()
-        result[headline]["title"] = mn.text
-        result[headline]["link"] = mn['onclick']
-        result[headline]["author"] = mn.text
-        result[headline]["date"] = str(datetime.datetime.now())
+        result[headline]["title"] = hn.select("span.news_txt")[0].text
+        result[headline]["link"] = hn.select("a")[0]['href']
+        result[headline]["author"] = hn.select("span.news_writer")[0].text.split(' | ')[0]
+        result[headline]["date"] = hn.select("span.news_writer")[0].text.split(' | ')[1]
 
     result_json = json.dumps(result, ensure_ascii=False)
     print(result_json)
 
+# threat research -> 취약점 분석
 def fireeye():
     url = "https://www.fireeye.com/blog/threat-research.html"
     webpage = requests.get(url)
@@ -41,7 +43,7 @@ def fireeye():
     result_json = json.dumps(result, ensure_ascii=False)
     print(result_json)
 
-
+# News and updates from the Project Zero team at Google
 def googleprojectzero():
     url = "https://googleprojectzero.blogspot.com/"
     webpage = requests.get(url)
@@ -60,8 +62,8 @@ def googleprojectzero():
     print(result_json)
 
 
-
-def zdnet():
+# 한국 지디넷코리아가 아님
+def zdnet_security():
     url = "https://www.zdnet.com/topic/security/"
     webpage = requests.get(url)
     soup = BeautifulSoup(webpage.text, "html.parser")
@@ -85,25 +87,22 @@ def zdnet():
 
 
 def wired_security():
-    url = "https://www.wired.com/category/security/"
-    webpage = requests.get(url)
+    url = "https://www.wired.com"
+    security_feature = "/category/security"
+    webpage = requests.get(url + security_feature)
     soup = BeautifulSoup(webpage.text, "html.parser")
 
-    headline_news_link = soup.select('li.card-component__description a')
-    headline_news_title = soup.select('li.card-component__description a h2')
-    headline_news_author = soup.select('li.card-component__description a.byline-component__link')
-
+    headline_news = soup.select("div.cards-component__row li.card-component__description")
     result = dict()
-    for i, hn in enumerate(headline_news_title):
-        headline = "headline" + str(i+1)
+    for i, hn in enumerate(headline_news):
+        headline = "headline" + str(i + 1)
         result[headline] = dict()
-        result[headline]["title"] = hn.text
-        result[headline]["link"] = headline_news_link[1 + 3*i]['href']
-        # print(hn)
+        result[headline]["title"] = hn.select('a h2')[0].text
+        result[headline]["link"] = hn.select('a')[0]['href']
+        result[headline]["author"] = hn.select('a.byline-component__link')[0].text
 
-    for i, hn in enumerate(headline_news_author):
-        headline = "headline" + str(i+1)
-        result[headline]["author"] = hn.text
+        _soup = BeautifulSoup(requests.get(url+result[headline]["link"]).text, "html.parser")
+        result[headline]["date"] = _soup.select_one("div.content-header__row.content-header__title-block time").text
 
     result_json = json.dumps(result, ensure_ascii=False)
     print(result_json)
@@ -112,11 +111,35 @@ def wired_security():
 def forbes():
     url = "https://www.forbes.com"
 
+# 최신 보안 뉴스
+def dailysecu():
+    url = "https://www.dailysecu.com/news/articleList.html?sc_section_code=S1N2&view_type=sm"
+    webpage = requests.get(url)
+    soup = BeautifulSoup(webpage.text, "html.parser")
+
+    headline_news = soup.select('div.list-block')
+
+    result = dict()
+    for i, hn in enumerate(headline_news):
+        author_and_date = hn.select("div.list-dated")[0].text.split(' | ')[1:3]
+
+        headline = "headline" + str(i + 1)
+        result[headline] = dict()
+        result[headline]["title"] = hn.select("div.list-titles")[0].text
+        result[headline]["link"] = hn.select("div.list-titles")[0].find("a")["href"]
+
+        result[headline]["author"] = author_and_date[0]
+        result[headline]["date"] = author_and_date[1]
+
+    result_json = json.dumps(result, ensure_ascii=False)
+    print(result_json)
+
 
 
 # boannews()
 # fireeye()
 # googleprojectzero()
-# zdnet()
+# zdnet_security()
 wired_security()
 # forbes()
+# dailysecu()
