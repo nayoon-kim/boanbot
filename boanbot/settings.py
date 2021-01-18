@@ -153,7 +153,7 @@ CACHES = {
     }
 }
 
-ALLOWD_HOSTS = [
+ALLOWED_HOSTS = [
     'localhost',
     '.ap-northeast-2.compute.amazonaws.com',
 ]
