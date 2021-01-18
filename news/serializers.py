@@ -4,4 +4,4 @@ from .models import News
 class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = News
-        fields = ['title', 'link']
+        fields = ['title', 'link', 'author', 'date']
