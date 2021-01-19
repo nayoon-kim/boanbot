@@ -3,7 +3,8 @@ import json
 from datetime import time
 from bs4 import BeautifulSoup
 
-urls = ["https://www.fireeye.com/blog.html", "https://googleprojectzero.blogspot.com/", "http://boannews.com/", "https://www.zdnet.com/topic/security/", "https://www.wired.com/category/security/", "https://www.forbes.com", "https://www.dailysecu.com/news/articleList.html?sc_section_code=S1N2&view_type=sm"]
+urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com/", "보안뉴스": "http://boannews.com/", "지디넷": "https://www.zdnet.com/topic/security/", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
+
 
 # 최신 보안 뉴스
 def boannews():
@@ -18,7 +19,7 @@ def boannews():
         headline = str(i + 1)
         result[headline] = dict()
         result[headline]["title"] = hn.select("span.news_txt")[0].text
-        result[headline]["link"] = hn.select("a")[0]['href']
+        result[headline]["link"] = urls["보안뉴스"] + hn.select("a")[0]['href']
         result[headline]["author"] = hn.select("span.news_writer")[0].text.split(' | ')[0]
         result[headline]["date"] = hn.select("span.news_writer")[0].text.split(' | ')[1]
 
@@ -37,7 +38,7 @@ def fireeye():
         result[headline] = {}
         result[headline]["date"] = c.find("p").text
         result[headline]["title"] = c.find("h4").text
-        result[headline]["link"] = c['href']
+        result[headline]["link"] = urls["fireeye"] + c['href']
 
     result_json = json.dumps(result, ensure_ascii=False)
     print(result_json)
@@ -55,7 +56,7 @@ def googleprojectzero():
     result["headline1"] = dict()
     result["headline1"]["date"] = headline_news[0].text
     result["headline1"]["title"] = headline_title[0].text
-    result["headline1"]["link"] = headline_title[0]['href']
+    result["headline1"]["link"] = urls["googleprojectzero"] + headline_title[0]['href']
 
     result_json = json.dumps(result, ensure_ascii=False)
     print(result_json)
@@ -75,7 +76,7 @@ def zdnet_security():
         headline = "headline" + str(i+1)
         result[headline] = dict()
         result[headline]["title"] = hn.text
-        result[headline]["link"] = hn['href']
+        result[headline]["link"] = urls['지디넷'] + hn['href']
     for i, hnd in enumerate(headline_news_details):
         headline = "headline" + str(i+1)
         result[headline]["author"] = hnd.find("a").text
@@ -86,9 +87,8 @@ def zdnet_security():
 
 # 최신 보안 뉴스
 def wired_security():
-    url = "https://www.wired.com"
-    security_feature = "/category/security"
-    webpage = requests.get(url + security_feature)
+    url = "https://www.wired.com/category/security"
+    webpage = requests.get(url)
     soup = BeautifulSoup(webpage.text, "html.parser")
 
     headline_news = soup.select("div.cards-component__row li.card-component__description")
@@ -97,14 +97,12 @@ def wired_security():
         headline = str(i + 1)
         result[headline] = dict()
         result[headline]["title"] = hn.select('a h2')[0].text
-        result[headline]["link"] = hn.select('a')[0]['href']
+        result[headline]["link"] = urls["wired"] + hn.select('a')[0]['href']
         result[headline]["author"] = hn.select('a.byline-component__link')[0].text
 
-        _soup = BeautifulSoup(requests.get(url+result[headline]["link"]).text, "html.parser")
+        _soup = BeautifulSoup(requests.get(result[headline]["link"]).text, "html.parser")
         result[headline]["date"] = _soup.select_one("div.content-header__row.content-header__title-block time").text
 
-    # result_json = json.dumps(result, ensure_ascii=False)
-    # print(result_json)
     return result
 
 
@@ -126,7 +124,7 @@ def dailysecu():
         headline = str(i + 1)
         result[headline] = dict()
         result[headline]["title"] = hn.select("div.list-titles")[0].text
-        result[headline]["link"] = hn.select("div.list-titles")[0].find("a")["href"]
+        result[headline]["link"] = urls['데일리시큐'] + hn.select("div.list-titles")[0].find("a")["href"]
 
         result[headline]["author"] = author_and_date[0]
         result[headline]["date"] = author_and_date[1]
@@ -134,7 +132,7 @@ def dailysecu():
     return result
 
 
-def newest_news():
+def newest_news(news_title="모아서 보기"):
     # 추가되었으면 하는 기능
     # 두 개의 기사를 비교해서 비슷한 내용일 경우 하나의 헤드라인을 삭제하는 식.
     # 각각 총 5개의 기사를 가져온다고 했을 때, 최악의 비교 횟수 5 * 5 * 5
@@ -142,6 +140,13 @@ def newest_news():
     _boannews = boannews()
     _wired_security = wired_security()
     _dailysecu = dailysecu()
+
+    if news_title == "보안뉴스":
+        return _boannews
+    elif news_title == "wired":
+        return _wired_security
+    elif news_title == "데일리시큐":
+        return _dailysecu
 
     result = dict()
     for i in range(1, 6):
@@ -190,3 +195,5 @@ def news_to_redis(self):
 # googleprojectzero()
 # zdnet_security()
 # forbes()
+
+print(wired_security())
