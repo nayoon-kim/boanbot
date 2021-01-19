@@ -3,7 +3,7 @@ import json
 from datetime import time
 from bs4 import BeautifulSoup
 
-urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com/", "보안뉴스": "http://boannews.com/", "지디넷": "https://www.zdnet.com/topic/security/", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
+urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com", "보안뉴스": "http://boannews.com", "지디넷": "https://www.zdnet.com", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
 
 
 # 최신 보안 뉴스
