@@ -4,26 +4,9 @@ from datetime import time
 from bs4 import BeautifulSoup
 
 urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com", "보안뉴스": "http://boannews.com", "지디넷": "https://www.zdnet.com", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
-
-
-# 최신 보안 뉴스
-def boannews():
-    url = "https://www.boannews.com/media/t_list.asp"
-    webpage = requests.get(url)
-    soup = BeautifulSoup(webpage.text, "html.parser")
-
-    headline_news = soup.select('div.news_list')
-    # print(headline_news)
-    result = dict()
-    for i, hn in enumerate(headline_news):
-        headline = str(i + 1)
-        result[headline] = dict()
-        result[headline]["title"] = hn.select("span.news_txt")[0].text
-        result[headline]["link"] = urls["보안뉴스"] + hn.select("a")[0]['href']
-        result[headline]["author"] = hn.select("span.news_writer")[0].text.split(' | ')[0]
-        result[headline]["date"] = hn.select("span.news_writer")[0].text.split(' | ')[1]
-
-    return result
+carousel_keywords = ["최신 보안 뉴스", "해외 보안 뉴스(한글)", "해외 보안 뉴스(영어)", "사건사고", "주의 이슈", "다크웹", "올해 보안 전망", "의료 보안", "주간 핫 뉴스", "취약점 경고 및 버그리포트", "컨퍼런스"]
+basicCard_keywords = ["구글제로프로젝트"]
+basic_image_url = ""
 
 # threat research -> 취약점 분석
 def fireeye():
@@ -56,10 +39,9 @@ def googleprojectzero():
     result["headline1"] = dict()
     result["headline1"]["date"] = headline_news[0].text
     result["headline1"]["title"] = headline_title[0].text
-    result["headline1"]["link"] = urls["googleprojectzero"] + headline_title[0]['href']
+    result["headline1"]["link"] = headline_title[0]['href']
 
-    result_json = json.dumps(result, ensure_ascii=False)
-    print(result_json)
+    return result
 
 
 # 한국 지디넷코리아가 아님
@@ -85,115 +67,78 @@ def zdnet_security():
     result_json = json.dumps(result, ensure_ascii=False)
     print(result_json)
 
-# 최신 보안 뉴스
-def wired_security():
-    url = "https://www.wired.com/category/security"
-    webpage = requests.get(url)
-    soup = BeautifulSoup(webpage.text, "html.parser")
-
-    headline_news = soup.select("div.cards-component__row li.card-component__description")
-    result = dict()
-    for i, hn in enumerate(headline_news):
-        headline = str(i + 1)
-        result[headline] = dict()
-        result[headline]["title"] = hn.select('a h2')[0].text
-        result[headline]["link"] = urls["wired"] + hn.select('a')[0]['href']
-        result[headline]["author"] = hn.select('a.byline-component__link')[0].text
-
-        _soup = BeautifulSoup(requests.get(result[headline]["link"]).text, "html.parser")
-        result[headline]["date"] = _soup.select_one("div.content-header__row.content-header__title-block time").text
-
-    return result
-
-
 def forbes():
     url = "https://www.forbes.com"
 
-# 최신 보안 뉴스
-def dailysecu():
-    url = "https://www.dailysecu.com/news/articleList.html?sc_section_code=S1N2&view_type=sm"
+def boannews(url):
     webpage = requests.get(url)
     soup = BeautifulSoup(webpage.text, "html.parser")
 
-    headline_news = soup.select('div.list-block')
+    news = soup.select('div.news_list')
 
-    result = dict()
-    for i, hn in enumerate(headline_news):
-        author_and_date = hn.select("div.list-dated")[0].text.split(' | ')[1:3]
-
-        headline = str(i + 1)
-        result[headline] = dict()
-        result[headline]["title"] = hn.select("div.list-titles")[0].text
-        result[headline]["link"] = urls['데일리시큐'] + hn.select("div.list-titles")[0].find("a")["href"]
-
-        result[headline]["author"] = author_and_date[0]
-        result[headline]["date"] = author_and_date[1]
+    result = list()
+    for n in news:
+        result.append({
+            "title": n.select("span.news_txt")[0].text,
+            "link": urls["보안뉴스"] + n.find("a")['href'],
+            "img": urls["보안뉴스"] + n.find("img")["src"] if n.find("img") is not None else basic_image_url,
+            "author": n.select("span.news_writer")[0].text.split(' | ')[0],
+            "date": n.select("span.news_writer")[0].text.split(' | ')[1]
+        })
 
     return result
 
+def dailysecu(url):
+    webpage = requests.get(url)
+    soup = BeautifulSoup(webpage.text, "html.parser")
 
-def newest_news(news_title="모아서 보기"):
-    # 추가되었으면 하는 기능
-    # 두 개의 기사를 비교해서 비슷한 내용일 경우 하나의 헤드라인을 삭제하는 식.
-    # 각각 총 5개의 기사를 가져온다고 했을 때, 최악의 비교 횟수 5 * 5 * 5
+    news = soup.select('div.list-block')
 
-    _boannews = boannews()
-    _wired_security = wired_security()
-    _dailysecu = dailysecu()
+    result = list()
 
-    if news_title == "보안뉴스":
-        return _boannews
-    elif news_title == "wired":
-        return _wired_security
-    elif news_title == "데일리시큐":
-        return _dailysecu
+    for n in news:
+        author_and_date = n.select("div.list-dated")[0].text.split(' | ')[1:3]
 
-    result = dict()
-    for i in range(1, 6):
-
-        number = str(i)
-
-        b_number = str(i)
-        w_number = str(i+5)
-        d_number = str(i+10)
-
-        result[b_number] = dict()
-        result[b_number]["title"] = _boannews[number]["title"]
-        result[b_number]["link"] = _boannews[number]["link"]
-        result[b_number]["author"] = _boannews[number]["author"]
-        result[b_number]["date"] = _boannews[number]["date"]
-
-        result[w_number] = dict()
-        result[w_number]["title"] = _wired_security[number]["title"]
-        result[w_number]["link"] = _wired_security[number]["link"]
-        result[w_number]["author"] = _wired_security[number]["author"]
-        result[w_number]["date"] = _wired_security[number]["date"]
-
-        result[d_number] = dict()
-        result[d_number]["title"] = _dailysecu[number]["title"]
-        result[d_number]["link"] = _dailysecu[number]["link"]
-        result[d_number]["author"] = _dailysecu[number]["author"]
-        result[d_number]["date"] = _dailysecu[number]["date"]
+        result.append({
+            "title": n.select_one("div.list-titles").text,
+            "link": urls['데일리시큐'] + n.select_one("div.list-titles a")["href"],
+            "img": image(urls['데일리시큐'] + n.select_one("div.list-titles a")["href"], "div.IMGFLOATING"),
+            "author": author_and_date[0],
+            "date": author_and_date[1]
+        })
 
     return result
-    # result_json = json.dumps(result, ensure_ascii=False)
-    # return result_json
 
-def news_to_redis(self):
-
-    # 서버에서 1시간에 한번씩 이슈를 가지고 와서 레디스의 이슈를 최신 이슈로 변경한다.
-    # newest_news -> redis / 가장 최근 이슈와의 date를 비교 후 삽입시도
-
-    # 일단 15개 밖에 없기 때문에, redis를 모두 지우고 redis에 다시 삽입.
+def image(url, option):
+    _soup = BeautifulSoup(requests.get(url).text, "html.parser")
+    return urls['데일리시큐'] + _soup.select_one(option + " img")["src"] if _soup.select_one(
+        option) is not None else basic_image_url
 
 
+# def wired(url):
+#     webpage = requests.get(url)
+#     soup = BeautifulSoup(webpage.text, "html.parser")
+#
+#     news = soup.select("div.cards-component div.card-component li")
+#
+#     result = list()
+#     print(len(news))
+#     for n in news:
+#         print(n)
+#         print('\n')
+#         # result.append({
+#         #     "title" : n.select_one('a h2').text,
+#         #     "link" : urls['wired'] + n.select_one('a').text,
+#         #     "img" : n.select_one('div.image-group-component img')['src'],
+#         #     "author" : n.select_one('a.byline-component__link').text,
+#         #     "date" : date(urls['wired'] + n.select_one('a').text),
+#         # })
+#
+#     return result
 
-    return self
+def date(url):
+    _soup = BeautifulSoup(requests.get(url).text, "html.parser")
+    return _soup.select_one("div.content-header__row.content-header__title-block time").text
 
 
-# fireeye()
-# googleprojectzero()
-# zdnet_security()
-# forbes()
-
-print(wired_security())
+# print(wired("https://www.wired.com/category/security"))
