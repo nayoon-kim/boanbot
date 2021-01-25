@@ -88,7 +88,7 @@ def boannews(url):
 
     return result
 
-def dailysecu(url):
+def dailysecu_news(url):
     webpage = requests.get(url)
     soup = BeautifulSoup(webpage.text, "html.parser")
 
@@ -108,6 +108,15 @@ def dailysecu(url):
         })
 
     return result
+
+def dailysecu_conference(url):
+    webpage = requests.get(url)
+    soup = BeautifulSoup(webpage.text, "html.parser")
+
+    news = soup.select('div.index-columns.grid-2.width-321')
+
+    print(news)
+
 
 def image(url, option):
     _soup = BeautifulSoup(requests.get(url).text, "html.parser")
@@ -142,3 +151,6 @@ def date(url):
 
 
 # print(wired("https://www.wired.com/category/security"))
+#side-scroll-in > div:nth-child(1) > div > div > div:nth-child(4) > a > img
+
+dailysecu_conference("https://www.dailysecu.com/")
