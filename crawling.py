@@ -1,7 +1,9 @@
 import requests
 import json
-from datetime import time
+from time import sleep
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com", "보안뉴스": "http://boannews.com", "지디넷": "https://www.zdnet.com", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
 carousel_keywords = ["최신 보안 뉴스", "해외 보안 뉴스(한글)", "해외 보안 뉴스(영어)", "사건사고", "주의 이슈", "다크웹", "올해 보안 전망", "의료 보안", "주간 핫 뉴스", "취약점 경고 및 버그리포트", "컨퍼런스"]
@@ -109,14 +111,35 @@ def dailysecu_news(url):
 
     return result
 
+# beautifulsoup는 오로지 html을 파싱하고 데이터를 크롤링하는 데에 쓰인다.
+# selenium은 웹 애플리케이션을 위한 테스팅 프레임워크이다.
+# 직접적으로 웹 사이트에 접근할 수 있게 해준다.
 def dailysecu_conference(url):
-    webpage = requests.get(url)
-    soup = BeautifulSoup(webpage.text, "html.parser")
+    driver = webdriver.Chrome(executable_path='chromedriver')
+    driver.set_window_size(990, 700)
+    driver.implicitly_wait(time_to_wait=5)
+    driver.get(url=url)
 
-    news = soup.select('div.index-columns.grid-2.width-321')
+    req = driver.page_source
+    soup = BeautifulSoup(req, "html.parser")
+    news = soup.select('div.clearfix.auto-pad-20.box-skin.line div.banner_box a')
 
-    print(news)
+    result = list()
+    for i, n in enumerate(news):
+        driver.get(n['href'])
+        sleep(0.1)
+        driver.save_screenshot(str(i+1)+".png")
+        result.append({
+            "title": "컨퍼런스",
+            "author": "nayoon",
+            "date": "2021.01.27",
+            "link": n['href'],
+            "img": "",
+        })
 
+    driver.close()
+
+    return result
 
 def image(url, option):
     _soup = BeautifulSoup(requests.get(url).text, "html.parser")
@@ -124,33 +147,30 @@ def image(url, option):
         option) is not None else basic_image_url
 
 
-# def wired(url):
-#     webpage = requests.get(url)
-#     soup = BeautifulSoup(webpage.text, "html.parser")
-#
-#     news = soup.select("div.cards-component div.card-component li")
-#
-#     result = list()
-#     print(len(news))
-#     for n in news:
-#         print(n)
-#         print('\n')
-#         # result.append({
-#         #     "title" : n.select_one('a h2').text,
-#         #     "link" : urls['wired'] + n.select_one('a').text,
-#         #     "img" : n.select_one('div.image-group-component img')['src'],
-#         #     "author" : n.select_one('a.byline-component__link').text,
-#         #     "date" : date(urls['wired'] + n.select_one('a').text),
-#         # })
-#
-#     return result
+def wired(url):
+    webpage = requests.get(url)
+    soup = BeautifulSoup(webpage.text, "html.parser")
+
+    news = soup.select("div.primary-grid-component div.card-component li")
+
+    result = list()
+    print(len(news))
+    # for n in news:
+    #     print(n)
+
+        # result.append({
+        #     "title" : n.select_one('a h2').text,
+        #     "link" : urls['wired'] + n.select_one('a').text,
+        #     "img" : n.select_one('div.image-group-component img')['src'],
+        #     "author" : n.select_one('a.byline-component__link').text,
+        #     "date" : date(urls['wired'] + n.select_one('a').text),
+        # })
+
+    return result
 
 def date(url):
     _soup = BeautifulSoup(requests.get(url).text, "html.parser")
     return _soup.select_one("div.content-header__row.content-header__title-block time").text
 
 
-# print(wired("https://www.wired.com/category/security"))
-#side-scroll-in > div:nth-child(1) > div > div > div:nth-child(4) > a > img
-
-dailysecu_conference("https://www.dailysecu.com/")
+print(wired("https://www.wired.com/category/security/"))
