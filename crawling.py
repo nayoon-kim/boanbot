@@ -151,20 +151,19 @@ def wired(url):
     webpage = requests.get(url)
     soup = BeautifulSoup(webpage.text, "html.parser")
 
-    news = soup.select("div.primary-grid-component div.card-component li")
+    news = soup.select("div.primary-grid-component div.card-component")
 
     result = list()
-    print(len(news))
-    # for n in news:
-    #     print(n)
-
-        # result.append({
-        #     "title" : n.select_one('a h2').text,
-        #     "link" : urls['wired'] + n.select_one('a').text,
-        #     "img" : n.select_one('div.image-group-component img')['src'],
-        #     "author" : n.select_one('a.byline-component__link').text,
-        #     "date" : date(urls['wired'] + n.select_one('a').text),
-        # })
+    for n in news:
+        description = n.select_one('li.card-component__description')
+        image = n.select_one('li.card-component__image')
+        result.append({
+            "title" : description.select_one('a h2').text,
+            "link" : urls['wired'] + description.select_one('a')['href'],
+            "img" : image.select_one('div.image-group-component img')['src'],
+            "author" : description.select_one('a.byline-component__link').text,
+            "date" : date(urls['wired'] + description.select_one('a')['href']),
+        })
 
     return result
 
@@ -172,5 +171,19 @@ def date(url):
     _soup = BeautifulSoup(requests.get(url).text, "html.parser")
     return _soup.select_one("div.content-header__row.content-header__title-block time").text
 
+# def wired_image(url):
+#     driver = webdriver.Chrome(executable_path='chromedriver')
+#     webpage = requests.get(url)
+#     driver.get(url=url)
+#
+#     req = driver.page_source
+#     soup = BeautifulSoup(req, "html.parser")
+#
+#     # main-content > article > div.lede-background > header > div > div.lead-asset.lead-asset--landscape.content-header__lead-asset.lead-asset--width-small > figure > div > span > picture > img
+#
+#
+#     # class ="lead-asset__media responsive-image"
+#     return a
 
+# print(wired_image("https://www.wired.com/story/north-korea-hackers-target-cybersecurity-researchers/"))
 print(wired("https://www.wired.com/category/security/"))

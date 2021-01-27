@@ -93,9 +93,9 @@ def foreign_news_korean():
 # 해외 보안 뉴스(영어)
 def foreign_news_english():
     url = "https://www.wired.com/category/security/"
-    # result = crawling.wired(url)
+    result = crawling.wired(url)
 
-    return url
+    return result
 
 # 의료 보안
 def medical_security():
