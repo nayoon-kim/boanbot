@@ -115,8 +115,13 @@ def dailysecu_news(url):
 # selenium은 웹 애플리케이션을 위한 테스팅 프레임워크이다.
 # 직접적으로 웹 사이트에 접근할 수 있게 해준다.
 def dailysecu_conference(url):
-    driver = webdriver.Chrome(executable_path='chromedriver')
-    driver.set_window_size(990, 700)
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+
+    driver = webdriver.Chrome(executable_path='chromedriver', chrome_options=chrome_options)
+    driver.set_window_size(1010, 700)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url=url)
 
@@ -128,7 +133,8 @@ def dailysecu_conference(url):
     for i, n in enumerate(news):
         driver.get(n['href'])
         sleep(0.1)
-        driver.save_screenshot(str(i+1)+".png")
+        driver.save_screenshot("media/" + str(i+1) + ".png")
+
         result.append({
             "title": "컨퍼런스",
             "author": "nayoon",
@@ -138,14 +144,13 @@ def dailysecu_conference(url):
         })
 
     driver.close()
-
+    print(result)
     return result
 
 def image(url, option):
     _soup = BeautifulSoup(requests.get(url).text, "html.parser")
     return urls['데일리시큐'] + _soup.select_one(option + " img")["src"] if _soup.select_one(
         option) is not None else basic_image_url
-
 
 def wired(url):
     webpage = requests.get(url)
@@ -170,20 +175,3 @@ def wired(url):
 def date(url):
     _soup = BeautifulSoup(requests.get(url).text, "html.parser")
     return _soup.select_one("div.content-header__row.content-header__title-block time").text
-
-# def wired_image(url):
-#     driver = webdriver.Chrome(executable_path='chromedriver')
-#     webpage = requests.get(url)
-#     driver.get(url=url)
-#
-#     req = driver.page_source
-#     soup = BeautifulSoup(req, "html.parser")
-#
-#     # main-content > article > div.lede-background > header > div > div.lead-asset.lead-asset--landscape.content-header__lead-asset.lead-asset--width-small > figure > div > span > picture > img
-#
-#
-#     # class ="lead-asset__media responsive-image"
-#     return a
-
-# print(wired_image("https://www.wired.com/story/north-korea-hackers-target-cybersecurity-researchers/"))
-print(wired("https://www.wired.com/category/security/"))
