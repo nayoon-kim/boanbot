@@ -1,0 +1,11 @@
+version: '3'
+services:
+  web:
+    container_name: boanbot
+    image: boanbot
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    command: /bin/sh -c "cd /srv/boanbot && python3 manage.py runserver 0.0.0.0:8080"

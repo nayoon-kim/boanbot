@@ -1,14 +1,17 @@
-FROM python:3.8
+FROM ubuntu:latest
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
+MAINTAINER nayoonkym@gmail.com
 
-COPY . /app
-RUN pip install -r /app/requirements.txt
-RUN chmod 755 /app/start
-WORKDIR /app
-EXPOSE 8000
+WORKDIR /srv/boanbot
 
-ENTRYPOINT ["/app/start"]
+RUN apt-get update
+
+# PIP
+RUN apt-get update
+RUN apt-get install -y python3.8 python3-pip --fix-missing
+WORKDIR /srv/boanbot
+COPY requirements.txt /srv/boanbot
+RUN pip3 install -r requirements.txt
+
+COPY . /srv/boanbot
+

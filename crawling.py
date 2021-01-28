@@ -120,7 +120,7 @@ def dailysecu_conference(url):
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
 
-    driver = webdriver.Chrome(executable_path='chromedriver', chrome_options=chrome_options)
+    driver = webdriver.Chrome(executable_path='/home/ubuntu/chromedriver', chrome_options=chrome_options)
     driver.set_window_size(1010, 700)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url=url)
