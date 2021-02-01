@@ -106,7 +106,7 @@ def dailysecu_news(url):
             "link": urls['데일리시큐'] + n.select_one("div.list-titles a")["href"],
             "img": image(urls['데일리시큐'] + n.select_one("div.list-titles a")["href"], "div.IMGFLOATING"),
             "author": author_and_date[0],
-            "date": author_and_date[1]
+            "date": dateFormat(author_and_date[1])
         })
 
     return result
@@ -175,3 +175,9 @@ def wired(url):
 def date(url):
     _soup = BeautifulSoup(requests.get(url).text, "html.parser")
     return _soup.select_one("div.content-header__row.content-header__title-block time").text
+
+def dateFormat(date):
+    date_str, time = date.split()
+    year, mon, day = date_str.split('-')
+
+    return year + "년 "+ mon + "월 " + day + "일 " + time
