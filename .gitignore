@@ -140,3 +140,4 @@ dmypy.json
 cython_debug/
 
 boanbot/secret.json
+/chromedriver.exe
