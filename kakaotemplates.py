@@ -2,14 +2,16 @@ import crawling
 import categorize
 
 def keywords(keyword):
-    if keyword in crawling.carousel_keywords:
-        return basicCard(keyword, carousel=True)
-    elif keyword in crawling.basicCard_keywords:
+    if keyword in crawling.basicCard_keywords:
         return basicCard(keyword, carousel=False)
+    return basicCard(keyword, carousel=True)
 
 def basicCard(keyword, carousel=True):
     _googleprojectzero = crawling.googleprojectzero()
     data = categorize.diverge(keyword)
+
+    if data == []:
+        return False
 
     if carousel:
         items = list()
