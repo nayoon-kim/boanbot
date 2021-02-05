@@ -254,8 +254,4 @@ def query(parameter):
     result.extend(dailysecu_query_news(parameter))
     result.extend(boannews_query_news(parameter))
 
-    if parameter == '한글':
-        result.extend(wired(parameter))
     return result
-
-print(dailysecu_query_news('홍사욱'))
