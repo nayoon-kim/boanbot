@@ -11,11 +11,7 @@ def callApi(request):
         data = JSONParser().parse(request)
         print(data)
         client_utterance = data['userRequest']['utterance'].strip('\n')
-
         if client_utterance in crawling.carousel_keywords + crawling.basicCard_keywords:
             return JsonResponse(kakaotemplates.keywords(client_utterance), status=200)
         else:
-            response = kakaotemplates.keywords(client_utterance)
-            if response is False:
-                return JsonResponse(kakaotemplates.quickReplies(), status=200)
-            return JsonResponse(response, status=200)
+            return JsonResponse(kakaotemplates.quickReplies(), status=200)
