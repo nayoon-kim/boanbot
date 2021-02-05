@@ -24,7 +24,8 @@ def diverge(keyword):
         data = foreign_news_english()
     elif keyword == "의료 보안":
         data = medical_security()
-
+    else:
+        data = crawling.query(keyword)
     return data
 
 # 컨퍼런스

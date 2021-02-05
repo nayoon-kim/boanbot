@@ -4,6 +4,7 @@ from time import sleep
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
 
 urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com", "보안뉴스": "http://boannews.com", "지디넷": "https://www.zdnet.com", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
 carousel_keywords = ["최신 보안 뉴스", "해외 보안 뉴스(한글)", "해외 보안 뉴스(영어)", "사건사고", "주의 이슈", "다크웹", "올해 보안 전망", "의료 보안", "주간 핫 뉴스", "취약점 경고 및 버그리포트", "컨퍼런스"]
@@ -181,3 +182,80 @@ def dateFormat(date):
     year, mon, day = date_str.split('-')
 
     return year + "년 "+ mon + "월 " + day + "일 " + time
+
+# POST 방식
+def dailysecu_query_news(parameter):
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    # chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--no-sandbox')
+    # chrome_options.add_argument('--disable-dev-shm-usage')
+    #
+    # driver = webdriver.Chrome(executable_path='chromedriver', chrome_options=chrome_options)
+    driver = webdriver.Chrome(executable_path='chromedriver')
+    driver.implicitly_wait(time_to_wait=5)
+    driver.get(urls['데일리시큐'])
+
+    element = driver.find_element_by_name('sc_word')
+    element.send_keys(parameter)
+    element.submit()
+
+    source = BeautifulSoup(driver.page_source, "html.parser")
+    news = source.select('div.list-block')
+    result = list()
+
+    if news != None:
+        for n in news:
+            author_and_date = n.select("div.list-dated")[0].text.split(' | ')[1:3]
+
+            result.append({
+                "title": n.select_one("div.list-titles").text,
+                "link": urls['데일리시큐'] + n.select_one("div.list-titles a")["href"],
+                "img": image(urls['데일리시큐'] + n.select_one("div.list-titles a")["href"], "div.IMGFLOATING"),
+                "author": author_and_date[0],
+                "date": dateFormat(author_and_date[1])
+            })
+
+    return result
+
+# GET 방식
+def boannews_query_news(parameter):
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
+
+    # for ec2
+    # chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--no-sandbox')
+    # chrome_options.add_argument('--disable-dev-shm-usage')
+
+    driver = webdriver.Chrome(executable_path='chromedriver', chrome_options=chrome_options)
+    # driver = webdriver.Chrome(executable_path='chromedriver')
+    driver.implicitly_wait(time_to_wait=5)
+    driver.get(urls['보안뉴스'])
+
+    # 검색
+    element = driver.find_element_by_name('find')
+    element.send_keys(parameter)
+    element.submit()
+
+    table = driver.find_elements_by_tag_name('table')[1]
+    tbody = table.find_element_by_tag_name('tbody')
+    trs = tbody.find_elements_by_tag_name('tr')
+
+
+    print(trs[-1].find_element_by_tag_name('a').get_attribute('href'))
+    result = boannews(trs[-1].find_element_by_tag_name('a').get_attribute('href'))
+
+    return result
+
+def query(parameter):
+
+    result = list()
+    result.extend(dailysecu_query_news(parameter))
+    result.extend(boannews_query_news(parameter))
+
+    if parameter == '한글':
+        result.extend(wired(parameter))
+    return result
+
+print(dailysecu_query_news('홍사욱'))
