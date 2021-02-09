@@ -3,8 +3,10 @@ import json
 from time import sleep
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+# from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
+from pyvirtualdisplay import Display
 
 urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com", "보안뉴스": "http://boannews.com", "지디넷": "https://www.zdnet.com", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
 carousel_keywords = ["최신 보안 뉴스", "해외 보안 뉴스(한글)", "해외 보안 뉴스(영어)", "사건사고", "주의 이슈", "다크웹", "올해 보안 전망", "의료 보안", "주간 핫 뉴스", "취약점 경고 및 버그리포트", "컨퍼런스"]
@@ -121,7 +123,7 @@ def dailysecu_conference(url):
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
 
-    driver = webdriver.Chrome(executable_path='/home/ubuntu/chromedriver', chrome_options=chrome_options)
+    driver = webdriver.Chrome(r"\home\ubuntu\chrome\chromedriver", chrome_options=chrome_options)
     driver.set_window_size(1010, 700)
     driver.implicitly_wait(time_to_wait=5)
     driver.get(url=url)
@@ -186,20 +188,26 @@ def dateFormat(date):
 # POST 방식
 def dailysecu_query_news(parameter):
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
-    # chrome_options.add_argument('--headless')
-    # chrome_options.add_argument('--no-sandbox')
-    # chrome_options.add_argument('--disable-dev-shm-usage')
-    #
-    # driver = webdriver.Chrome(executable_path='chromedriver', chrome_options=chrome_options)
-    driver = webdriver.Chrome(executable_path='chromedriver')
+    # chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    
+    # display = Display(visible=0, size=(1024, 768))
+    # display.start()
+
+    # Chrome start
+    driver = webdriver.Chrome(options=chrome_options)
+    # driver = webdriver.Firefox()
     driver.implicitly_wait(time_to_wait=5)
     driver.get(urls['데일리시큐'])
 
+    # search parameter, sc_word is the element of search tag in dailysecu
     element = driver.find_element_by_name('sc_word')
     element.send_keys(parameter)
     element.submit()
 
+    # scraping the page and search -> same with dailysecu function()
     source = BeautifulSoup(driver.page_source, "html.parser")
     news = source.select('div.list-block')
     result = list()
@@ -216,20 +224,27 @@ def dailysecu_query_news(parameter):
                 "date": dateFormat(author_and_date[1])
             })
 
+    driver.quit()
     return result
 
 # GET 방식
 def boannews_query_news(parameter):
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    # chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
     # for ec2
-    # chrome_options.add_argument('--headless')
-    # chrome_options.add_argument('--no-sandbox')
-    # chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
 
-    driver = webdriver.Chrome(executable_path='chromedriver', chrome_options=chrome_options)
-    # driver = webdriver.Chrome(executable_path='chromedriver')
+    # options = Options()
+    # options.headless = True
+
+    # display = Display(visible=0, size=(1024, 768))
+    # display.start()
+
+    driver = webdriver.Chrome(options=chrome_options)
+    # driver = webdriver.Firefox()
     driver.implicitly_wait(time_to_wait=5)
     driver.get(urls['보안뉴스'])
 
@@ -242,10 +257,9 @@ def boannews_query_news(parameter):
     tbody = table.find_element_by_tag_name('tbody')
     trs = tbody.find_elements_by_tag_name('tr')
 
-
-    print(trs[-1].find_element_by_tag_name('a').get_attribute('href'))
     result = boannews(trs[-1].find_element_by_tag_name('a').get_attribute('href'))
 
+    driver.quit()
     return result
 
 def query(parameter):
@@ -253,5 +267,5 @@ def query(parameter):
     result = list()
     result.extend(dailysecu_query_news(parameter))
     result.extend(boannews_query_news(parameter))
-
+    print(result)
     return result
