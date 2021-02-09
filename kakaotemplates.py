@@ -96,14 +96,14 @@ def listcard(news_title):
     }
 
 # SimpleText 템플릿
-def simpleText(name):
+def simpleText():
     return {
         "version": "2.0",
         "template": {
             "outputs": [
                 {
                     "simpleText": {
-                        "text": name
+                        "text": "최신 보안 이슈를 알려주는 보안봇입니다!\n\n보안뉴스, 데일리시큐, wired 등 원하는 뉴스를 볼 수 있습니다.\n\n'보안', '안내', '키워드' 를 입력하면 확인 가능한 뉴스 리스트를 볼 수 있습니다.\n\n원하는 키워드가 들어간 최신 뉴스 기사를 볼 수 있습니다.\n\n채팅창에 '솔라윈즈', '제로데이' 와 같은 핫한 보안 키워드를 입력해보세요."
                     }
                 }
             ]

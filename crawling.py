@@ -195,11 +195,13 @@ def dailysecu_query_news(parameter):
     soup = BeautifulSoup(response.read().decode('utf-8'), "html.parser")
     news = soup.select('div.list-block')
     result = list()
-
+    count = 10
     if news != None:
         for n in news:
+            if count == 0: break
+            count -= 1
             author_and_date = n.select("div.list-dated")[0].text.split(' | ')[1:3]
-
+    
             result.append({
                 "title": n.select_one("div.list-titles").text,
                 "link": urls['데일리시큐'] + n.select_one("div.list-titles a")["href"],
@@ -220,7 +222,7 @@ def boannews_query_news(parameter):
 
 def query(parameter):
     result = list()
-    result.extend(dailysecu_query_news(parameter))
+    # result.extend(dailysecu_query_news(parameter))
     result.extend(boannews_query_news(parameter))
 
     return result
