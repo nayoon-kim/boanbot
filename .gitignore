@@ -191,8 +191,6 @@ dmypy.json
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 
-# Celery stuff
-
 # SageMath parsed files
 
 # Environments
@@ -213,7 +211,7 @@ dmypy.json
 
 ### Redis ###
 # Ignore redis binary dump (dump.rdb) files
-
+redis-stable
 *.rdb
 
 ### Windows ###
@@ -241,5 +239,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+*.js
+*.css
 
 # End of https://www.toptal.com/developers/gitignore/api/django,redis,python,windows
