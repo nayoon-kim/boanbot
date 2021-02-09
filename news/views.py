@@ -13,6 +13,8 @@ def callApi(request):
         client_utterance = data['userRequest']['utterance'].strip('\n')
         if client_utterance in crawling.carousel_keywords + crawling.basicCard_keywords:
             return JsonResponse(kakaotemplates.keywords(client_utterance), status=200)
+        elif client_utterance in ['보안', '안내', '키워드']:
+            return JsonResponse(kakaotemplates.keywords(client_utterance), status=200)
         else:
             response = kakaotemplates.keywords(client_utterance)
             if response is False:
