@@ -17,9 +17,10 @@ def basicCard(keyword, carousel=True):
         items = list()
         count = 0
         for d in data:
-            if count == 10:
-                break
+            # 뉴스 기사가 10개 이상일 경우 break
+            if count == 10: break
             count += 1
+
             items.append({
                 "title": d["title"],
                 "description": d["author"] + " | " + d["date"],
