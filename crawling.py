@@ -9,7 +9,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
 
 urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com", "보안뉴스": "http://boannews.com", "지디넷": "https://www.zdnet.com", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
-carousel_keywords = ["최신 보안 뉴스", "해외 보안 뉴스(한글)", "해외 보안 뉴스(영어)", "사건사고", "주의 이슈", "다크웹", "올해 보안 전망", "의료 보안", "주간 핫 뉴스", "취약점 경고 및 버그리포트", "컨퍼런스"]
+carousel_keywords = ["최신 보안 뉴스", "해외 보안 뉴스(한글)", "해외 보안 뉴스(영어)", "사건사고", "주의 이슈", "다크웹", "올해 보안 전망", "의료 보안", "주간 핫 뉴스", "취약점 경고 및 버그리포트"]
 basicCard_keywords = ["구글제로프로젝트"]
 basic_image_url = ""
 

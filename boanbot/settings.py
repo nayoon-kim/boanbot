@@ -13,6 +13,9 @@ import os
 from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 import json
+from datetime import timedelta
+from tasks import say_hello, main_process
+from .celery import app as celery_app
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -50,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'news',
+    'django_celery_beat',
 ]
 
 REST_FRAMEWORK = {
@@ -163,3 +167,18 @@ ALLOWED_HOSTS = [
     'web',
     '0.0.0.0',
 ]
+
+CELERY_BROKER_URL='redis://localhost:6379/0'
+CELERY_RESULT_BACKEND='redis://localhost:6379/1'
+CELERY_ACCEPT_CONTENT=['application/json']
+CELERY_TASK_SERIALIZER='json'
+CELERY_RESULT_SERIALIZER='json'
+CELERY_TIMEZONE=TIME_ZONE
+
+CELERYBEAT_SCHEDULE = {
+        'main_process-every-2-minutes': {
+            'task': 'main_process',
+            'schedule': timedelta(seconds=60),
+            'args': ()
+        },
+}
