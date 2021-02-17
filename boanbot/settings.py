@@ -179,7 +179,7 @@ CELERY_TIMEZONE=TIME_ZONE
 CELERYBEAT_SCHEDULE = {
         'crawling_process-every-2-minutes': {
             'task': 'crawling_process',
-            'schedule': timedelta(seconds=60),
+            'schedule': timedelta(seconds=120),
             'args': ()
         },
 }

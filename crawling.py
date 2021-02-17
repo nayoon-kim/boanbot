@@ -9,8 +9,8 @@ from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
 
 urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com", "보안뉴스": "http://boannews.com", "지디넷": "https://www.zdnet.com", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
-carousel_keywords = ["최신 보안 뉴스", "해외 보안 뉴스(한글)", "해외 보안 뉴스(영어)", "사건사고", "주의 이슈", "다크웹", "올해 보안 전망", "의료 보안", "주간 핫 뉴스", "취약점 경고 및 버그리포트"]
-basicCard_keywords = ["구글제로프로젝트"]
+carousel_keywords = {"newest_news": "최신 보안 뉴스", "global_news_korean":"해외 보안 뉴스(한글)", "global_news_english": "해외 보안 뉴스(영어)", "accidents": "사건사고", "warning_issues": "주의 이슈", "darkweb": "다크웹", "security_prospect": "올해 보안 전망", "medical_security": "의료 보안", "weekly_hot_news": "주간 핫 뉴스", "week_point_and_bug_report": "취약점 경고 및 버그리포트"}
+basicCard_keywords = {"google_zero_project": "구글제로프로젝트"}
 basic_image_url = ""
 
 # threat research -> 취약점 분석
@@ -37,14 +37,13 @@ def googleprojectzero():
     webpage = requests.get(url)
     soup = BeautifulSoup(webpage.text, "html.parser")
 
-    headline_news = soup.select('h2.date-header span')
-    headline_title = soup.select('h3.post-title.entry-title a')
+    headline_news_date = soup.select_one('h2.date-header span')
+    headline_title = soup.select_one('h3.post-title.entry-title a')
 
     result = dict()
-    result["headline1"] = dict()
-    result["headline1"]["date"] = headline_news[0].text
-    result["headline1"]["title"] = headline_title[0].text
-    result["headline1"]["link"] = headline_title[0]['href']
+    result["date"] = headline_news_date.text
+    result["title"] = headline_title.text
+    result["link"] = headline_title['href']
 
     return result
 

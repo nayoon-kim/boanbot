@@ -1,9 +1,9 @@
 from celery.decorators import task
 import crawling
 import categorize
-import redis
+# import redis
 
-REDIS = redis.Redis(host="127.0.0.1", port=6379, db=1)
+# REDIS = redis.Redis(host="127.0.0.1", port=6379, db=1)
 
 @task(name="say_hello")
 def say_hello():

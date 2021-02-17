@@ -2,18 +2,18 @@ import crawling
 import categorize
 
 def keywords(keyword):
-    if keyword in crawling.basicCard_keywords:
+    if keyword in list(crawling.basicCard_keywords.values()):
         return basicCard(keyword, carousel=False)
     return basicCard(keyword, carousel=True)
 
 def basicCard(keyword, carousel=True):
     _googleprojectzero = crawling.googleprojectzero()
-    data = categorize.diverge(keyword)
-
-    if data == []:
-        return False
 
     if carousel:
+        data = categorize.diverge(keyword)
+        if data == []:
+            return False
+
         items = list()
         count = 0
         for d in data:
@@ -58,7 +58,7 @@ def basicCard(keyword, carousel=True):
                     {
                         "basicCard": {
                             "title": "구글 프로젝트 제로에 대한 최신 이슈",
-                            "description": _googleprojectzero["headline1"]["title"] + "\n" + _googleprojectzero["headline1"]["date"],
+                            "description": _googleprojectzero["title"] + "\n" + _googleprojectzero["date"],
                             "thumbnail": {
                                 "imageUrl": "http://k.kakaocdn.net/dn/83BvP/bl20duRC1Q1/lj3JUcmrzC53YIjNDkqbWK/i_6piz1p.jpg"
                             },
@@ -66,7 +66,7 @@ def basicCard(keyword, carousel=True):
                                 {
                                     "action": "webLink",
                                     "label": "자세히 보기",
-                                    "webLinkUrl": _googleprojectzero["headline1"]["link"]
+                                    "webLinkUrl": _googleprojectzero["link"]
                                 }
                             ]
                         }
