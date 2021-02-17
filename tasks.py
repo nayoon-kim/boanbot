@@ -4,7 +4,7 @@ import categorize
 import redis
 import json
 
-REDIS = redis.Redis(host="127.0.0.1", port=6379, db=1, password="boanbot", decode_responses=True)
+REDIS = redis.Redis(host="redis", port=6379, db=1, decode_responses=True)
 
 print("-------------------REDIS START-------------------\nREDIS PING:\n PONG(", REDIS.ping(), ")")
 
