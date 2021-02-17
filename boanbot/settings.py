@@ -163,7 +163,7 @@ CACHES = {
 
 ALLOWED_HOSTS = [
     'localhost',
-    'ec2-13-209-72-179.ap-northeast-2.compute.amazonaws.com',
+    '.ap-northeast-2.compute.amazonaws.com',
     '127.0.0.1',
     'web',
     '0.0.0.0',
