@@ -14,7 +14,7 @@ from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 import json
 from datetime import timedelta
-from tasks import say_hello, main_process
+from tasks import crawling_process
 from .celery import app as celery_app
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'news',
     'django_celery_beat',
+    'boanbot',
 ]
 
 REST_FRAMEWORK = {
@@ -176,8 +177,8 @@ CELERY_RESULT_SERIALIZER='json'
 CELERY_TIMEZONE=TIME_ZONE
 
 CELERYBEAT_SCHEDULE = {
-        'main_process-every-2-minutes': {
-            'task': 'main_process',
+        'crawling_process-every-2-minutes': {
+            'task': 'crawling_process',
             'schedule': timedelta(seconds=60),
             'args': ()
         },

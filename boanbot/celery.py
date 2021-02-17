@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 import os
 from celery import Celery
 from datetime import timedelta
@@ -6,7 +5,7 @@ from datetime import timedelta
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'boanbot.settings')
 
 from django.conf import settings
-from tasks import say_hello,main_process
+from tasks import say_hello,crawling_process
 
 app = Celery("boanbot")
 
@@ -14,8 +13,8 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule={
-        'main_process-every-2-minutes': {
-            'task': 'main_process',
+        'crawling_process-every-2-minutes': {
+            'task': 'crawling_process',
             'schedule': timedelta(seconds=60),
             'args': (),
         },
