@@ -1,5 +1,11 @@
 version: '3'
 services:
+  redis:
+    image: redis:5.0.3-alpine
+    ports:
+      - '6379:6379'
+    command: redis-server --requirepass boanbot --port 6379
+    restart: always
   nginx:
     image: nginx:latest
     ports:
@@ -16,4 +22,4 @@ services:
       dockerfile: Dockerfile
     command: gunicorn boanbot.wsgi:application --bind 0.0.0.0:8080
     ports:
-      - "8080:8080"
+      - '8080:8080'

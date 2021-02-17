@@ -1,9 +1,12 @@
 from celery.decorators import task
 import crawling
 import categorize
-# import redis
+import redis
+import json
 
-# REDIS = redis.Redis(host="127.0.0.1", port=6379, db=1)
+REDIS = redis.Redis(host="127.0.0.1", port=6379, db=1, password="boanbot", decode_responses=True)
+
+print("-------------------REDIS START-------------------\nREDIS PING:\n PONG(", REDIS.ping(), ")")
 
 @task(name="say_hello")
 def say_hello():
@@ -12,7 +15,6 @@ def say_hello():
 @task(name="crawling_process")
 def crawling_process():
     for keyword in crawling.carousel_keywords:
-        result = categorize.diverge(keyword)
+        result = categorize.diverge(crawling.carousel_keywords[keyword])
         # redis에는 key keyword에 list result가 들어감
-        # REDIS.set(keyword, result)
-        return result
+        REDIS.set(name=keyword, value=json.dumps(result))
