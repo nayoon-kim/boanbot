@@ -14,11 +14,11 @@ def callApi(request):
         print(data)
         client_utterance = data['userRequest']['utterance'].strip('\n')
 
-        if client_utterance in crawling.carousel_keywords.keys():
+        if client_utterance in list(crawling.carousel_keywords.keys()):
             if tasks.REDIS.get(crawling.carousel_keywords[client_utterance]):
                 return JsonResponse(kakaotemplates.basicCard_templates(json.loads(tasks.REDIS.get(crawling.carousel_keywords[client_utterance]))), status=200)
             return JsonResponse(kakaotemplates.keywords(client_utterance), status=200)
-        elif client_utterance in crawling.basicCard_keywords.keys():
+        elif client_utterance in list(crawling.basicCard_keywords.keys()):
             if tasks.REDIS.get(crawling.basicCard_keywords[client_utterance]):
                 return JsonResponse(kakaotemplates.basicCard_templates_withoutCarousel(json.loads(tasks.REDIS.get(crawling.basicCard_keywords[client_utterance]))), status=200)
             return JsonResponse(kakaotemplates.keywords(client_utterance), status=200)

@@ -2,7 +2,7 @@ import crawling
 import categorize
 
 def keywords(keyword):
-    if keyword in list(crawling.basicCard_keywords.values()):
+    if keyword in list(crawling.basicCard_keywords.keys()):
         return basicCard(keyword, carousel=False)
     return basicCard(keyword, carousel=True)
 def basicCard_templates(data):
