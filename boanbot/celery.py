@@ -13,9 +13,9 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule={
-        'crawling_process-every-2-minutes': {
+        'crawling_process-an-hour': {
             'task': 'crawling_process',
-            'schedule': timedelta(seconds=120),
+            'schedule': timedelta(seconds=3600),
             'args': (),
         },
 }

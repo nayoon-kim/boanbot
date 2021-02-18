@@ -225,7 +225,7 @@ def query(parameter):
     result = list()
     # result.extend(dailysecu_query_news(parameter))
     result.extend(boannews_query_news(parameter))
-    print(parameter, json.dumps(result, ensure_ascii=False))
+    
     tasks.REDIS.set(parameter, json.dumps(result, ensure_ascii=False)) 
     tasks.REDIS.expire(parameter, 120)
     return result
