@@ -5,36 +5,28 @@ def keywords(keyword):
     if keyword in list(crawling.basicCard_keywords.values()):
         return basicCard(keyword, carousel=False)
     return basicCard(keyword, carousel=True)
+def basicCard_templates(data):
+    items = list()
+    count = 0
+    for d in data:
+        # 뉴스 기사가 10개 이상일 경우 break
+        if count == 10: break
+        count += 1
 
-def basicCard(keyword, carousel=True):
-    _googleprojectzero = crawling.googleprojectzero()
-
-    if carousel:
-        data = categorize.diverge(keyword)
-        if data == []:
-            return False
-
-        items = list()
-        count = 0
-        for d in data:
-            # 뉴스 기사가 10개 이상일 경우 break
-            if count == 10: break
-            count += 1
-
-            items.append({
-                "title": d["title"],
-                "description": d["author"] + " | " + d["date"],
-                "thumbnail": {
-                    "imageUrl": d["img"]
-                },
-                "buttons": [
-                    {
-                        "action": "webLink",
-                        "label": "자세히 보기",
-                        "webLinkUrl": d["link"]
-                    }
-                ]
-            })
+        items.append({
+            "title": d["title"],
+            "description": d["author"] + " | " + d["date"],
+            "thumbnail": {
+                "imageUrl": d["img"]
+            },
+            "buttons": [
+                {
+                    "action": "webLink",
+                    "label": "자세히 보기",
+                    "webLinkUrl": d["link"]
+                }
+            ]
+        })
 
         return {
             "version": "2.0",
@@ -49,6 +41,18 @@ def basicCard(keyword, carousel=True):
                 ]
             }
         }
+
+def basicCard(keyword, carousel=True):
+    _googleprojectzero = crawling.googleprojectzero()
+
+    if carousel:
+        data = categorize.diverge(keyword)
+        if data == []:
+            return False
+
+        items = basicCard_templates(data)
+
+        return items
 
     else:
         return {
