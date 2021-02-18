@@ -114,7 +114,8 @@ def simpleText():
 # 바로가기 응답 템플릿
 def quickReplies():
     data = []
-    for d in list(crawling.carousel_keywords.values()) + list(crawling.basicCard_keywords.values()):
+    for d in list(crawling.carousel_keywords.keys()) + list(crawling.basicCard_keywords.keys()):
+
         data.append({
             "messageText": d,
             "action": "message",

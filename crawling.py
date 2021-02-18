@@ -7,6 +7,7 @@ from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
+import tasks
 
 urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com", "보안뉴스": "http://boannews.com", "지디넷": "https://www.zdnet.com", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
 carousel_keywords = {"최신 보안 뉴스": "newest_news", "해외 보안 뉴스(한글)":"global_news_korean", "해외 보안 뉴스(영어)": "global_news_english", "사건사고": "accidents", "주의 이슈": "warning_issues", "다크웹": "darkweb", "올해 보안 전망": "security_prospect","의료 보안" : "medical_security","주간 핫 뉴스" : "weekly_hot_news", "취약점 경고 및 버그리포트": "weak_point_and_bug_report"}
@@ -224,5 +225,7 @@ def query(parameter):
     result = list()
     # result.extend(dailysecu_query_news(parameter))
     result.extend(boannews_query_news(parameter))
-
+    print(parameter, json.dumps(result, ensure_ascii=False))
+    tasks.REDIS.set(parameter, json.dumps(result, ensure_ascii=False)) 
+    tasks.REDIS.expire(parameter, 120)
     return result

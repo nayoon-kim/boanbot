@@ -5,6 +5,7 @@ import redis
 import json
 
 REDIS = redis.Redis(host="redis", port=6379, db=1, decode_responses=True)
+REDIS.flushdb()
 
 print("-------------------REDIS START-------------------\nREDIS PING:\n PONG(", REDIS.ping(), ")")
 
@@ -15,6 +16,7 @@ def say_hello():
 @task(name="crawling_process")
 def crawling_process():
     for keyword in crawling.carousel_keywords:
-        result = categorize.diverge(crawling.carousel_keywords[keyword])
+        result = categorize.diverge(keyword)
+        print(crawling.carousel_keywords[keyword], json.dumps(result, ensure_ascii=False))
         # redis에는 key=keyword, value=list를 str로 바꿈(str이 아니면 에러가 남)
-        REDIS.set(name=keyword, value=json.dumps(result))
+        REDIS.set(crawling.carousel_keywords[keyword], json.dumps(result, ensure_ascii=False))

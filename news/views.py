@@ -5,6 +5,7 @@ from rest_framework.parsers import JSONParser
 import crawling
 import kakaotemplates
 import tasks
+import json
 
 @csrf_exempt
 def callApi(request):
@@ -14,8 +15,8 @@ def callApi(request):
         client_utterance = data['userRequest']['utterance'].strip('\n')
 
         if client_utterance in crawling.carousel_keywords.keys() or client_utterance in crawling.basicCard_keywords.keys():
-            if tasks.REDIS.get(client_utterance):
-                return JsonResponse(tasks.REDIS.get(client_utterance), status=200)
+            if tasks.REDIS.get(crawling.carousel_keywords[client_utterance]):
+                return JsonResponse(tasks.REDIS.get(crawling.carousel_keywords[client_utterance]), status=200)
             return JsonResponse(kakaotemplates.keywords(client_utterance), status=200)
         elif client_utterance in ['보안', '안내', '키워드']:
             return JsonResponse(kakaotemplates.quickReplies(), status=200)
@@ -25,6 +26,4 @@ def callApi(request):
             response = kakaotemplates.keywords(client_utterance)
             if response is False:
                 return JsonResponse(kakaotemplates.simpleText(), status=200)
-            tasks.REDIS.set(client_utterance, response)
-            tasks.REDIS.expire(client_utterance, 600)
             return JsonResponse(response, status=200)
