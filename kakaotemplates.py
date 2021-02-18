@@ -28,19 +28,19 @@ def basicCard_templates(data):
             ]
         })
 
-        return {
-            "version": "2.0",
-            "template": {
-                "outputs": [
-                    {
-                        "carousel": {
-                            "type": "basicCard",
-                            "items": items
-                        }
+    return {
+        "version": "2.0",
+        "template": {
+            "outputs": [
+                {
+                    "carousel": {
+                        "type": "basicCard",
+                        "items": items
                     }
-                ]
-            }
+                }
+            ]
         }
+    }
 
 def basicCard(keyword, carousel=True):
     _googleprojectzero = crawling.googleprojectzero()
