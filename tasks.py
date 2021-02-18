@@ -16,5 +16,5 @@ def say_hello():
 def crawling_process():
     for keyword in crawling.carousel_keywords:
         result = categorize.diverge(crawling.carousel_keywords[keyword])
-        # redis에는 key keyword에 list result가 들어감
+        # redis에는 key=keyword, value=list를 str로 바꿈(str이 아니면 에러가 남)
         REDIS.set(name=keyword, value=json.dumps(result))

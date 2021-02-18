@@ -9,8 +9,8 @@ from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
 
 urls = {"fireeye": "https://www.fireeye.com/blog.html", "googleprojectzero": "https://googleprojectzero.blogspot.com", "보안뉴스": "http://boannews.com", "지디넷": "https://www.zdnet.com", "wired": "https://www.wired.com", "포브스": "https://www.forbes.com", "데일리시큐": "https://www.dailysecu.com"}
-carousel_keywords = {"newest_news": "최신 보안 뉴스", "global_news_korean":"해외 보안 뉴스(한글)", "global_news_english": "해외 보안 뉴스(영어)", "accidents": "사건사고", "warning_issues": "주의 이슈", "darkweb": "다크웹", "security_prospect": "올해 보안 전망", "medical_security": "의료 보안", "weekly_hot_news": "주간 핫 뉴스", "week_point_and_bug_report": "취약점 경고 및 버그리포트"}
-basicCard_keywords = {"google_zero_project": "구글제로프로젝트"}
+carousel_keywords = {"최신 보안 뉴스": "newest_news", "해외 보안 뉴스(한글)":"global_news_korean", "해외 보안 뉴스(영어)": "global_news_english", "사건사고": "accidents", "주의 이슈": "warning_issues", "다크웹": "darkweb", "올해 보안 전망": "security_prospect","의료 보안" : "medical_security","주간 핫 뉴스" : "weekly_hot_news", "취약점 경고 및 버그리포트": "weak_point_and_bug_report"}
+basicCard_keywords = {"구글제로프로젝트": "google_zero_project"}
 basic_image_url = ""
 
 # threat research -> 취약점 분석
@@ -151,8 +151,9 @@ def dailysecu_conference(url):
 
 def image(url, option):
     _soup = BeautifulSoup(requests.get(url).text, "html.parser")
-    return urls['데일리시큐'] + _soup.select_one(option + " img")["src"] if _soup.select_one(
+    result = urls['데일리시큐'] + _soup.select_one(option + " img")["src"] if _soup.select_one(
         option) is not None else basic_image_url
+    return result
 
 def wired(url):
     webpage = requests.get(url)
