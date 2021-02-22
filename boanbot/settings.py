@@ -14,8 +14,8 @@ from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 import json
 from datetime import timedelta
-from tasks import crawling_process
-from .celery import app as celery_app
+# from tasks import crawling_process
+# from .celery import app as celery_app
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'news',
     'django_celery_beat',
     'boanbot',
 ]

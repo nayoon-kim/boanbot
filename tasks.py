@@ -1,6 +1,6 @@
 from celery.decorators import task
-import crawling
-import categorize
+from hub import Hub
+from utils import basicCard_keywords
 import redis
 import json
 
@@ -15,7 +15,8 @@ def say_hello():
 
 @task(name="crawling_process")
 def crawling_process():
-    for keyword in crawling.carousel_keywords:
-        result = categorize.diverge(keyword)
+    hub = Hub()
+    for keyword in basicCard_keywords:
+        result = hub.diverge(keyword)
         # redis에는 key=keyword, value=list를 str로 바꿈(str이 아니면 에러가 남)
-        REDIS.set(crawling.carousel_keywords[keyword], json.dumps(result, ensure_ascii=False))
+        REDIS.set(keyword, json.dumps(result, ensure_ascii=False))
