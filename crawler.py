@@ -3,24 +3,27 @@ from utils import dateFormat
 import requests
 
 class Crawler:
-    def boannews_path(self, params="/"):
+    def boannews_path(self, params=""):
         return "https://www.boannews.com" + params
-    def dailysecu_path(self, params="/"):
+    def dailysecu_path(self, params=""):
         return "https://www.dailysecu.com/news/articleList.html" + params
-    def wired_path(self, params="/"):
+    def wired_path(self, params=""):
         return "https://www.wired.com" + params
-    def googlezeroprojects_path(self, params="/"):
+    def googlezeroprojects_path(self, params=""):
         return "https://googleprojectzero.blogspot.com" + params
-    def query_path(self, where, url, category):
-        path = ""
+    def query_path(self, where, path, find):
+        q_path = ""
         # boannews
-        if where == "boannews":
-            path = url + "?search=title&find=" + category.encode('euc-kr')
+        if where == "보안뉴스":
+            params = {"search": "title", "find": find.encode('euc-kr')}
+            q_path = "?" + (requests.get(self.boannews_path(path), params).url).split('?')[1]
         # dailysecu
-        elif where == "dailysecu":
-            path = url + "?sc_area=A&view_type=sm&sc_word=" + category
+        elif where == "데일리시큐":
+            params = {"sc_area": "A", "view_type": "sm", "sc_word": find}
+            q_path = "?" + (requests.get(self.dailysecu_path(path), params).url).split('?')[1]
 
-        return path
+        return q_path
+
     def boannews(self, params):
         webpage = requests.get(self.boannews_path(params))
         soup = BeautifulSoup(webpage.text, "html.parser")
