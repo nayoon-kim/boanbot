@@ -1,5 +1,4 @@
 from celery.decorators import task
-from hub import Hub
 from utils import basicCard_keywords
 import redis
 import json
@@ -15,6 +14,7 @@ def say_hello():
 
 @task(name="crawling_process")
 def crawling_process():
+    from hub import Hub
     hub = Hub()
     for keyword in basicCard_keywords:
         result = hub.diverge(keyword)

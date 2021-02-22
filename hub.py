@@ -1,4 +1,5 @@
 import tasks
+import json
 from crawler import Crawler
 
 class Hub:
@@ -9,11 +10,13 @@ class Hub:
 
     crawler = Crawler()
 
-    def redis(self, category):
+    def redis_get(self, category):
         return tasks.REDIS.get(category)
-
+    def redis_set(self, category, result):
+        tasks.REDIS.set(category, json.dumps(result, ensure_ascii=False))
     def distribute(self, category):
-        result = self.diverge(category) if not self.redis(category) else self.redis(category)
+        result = self.diverge(category) if not self.redis_get(category) else self.redis_get(category)
+        if not self.redis_get(category): self.redis_set(category, result)
         return result
 
     def diverge(self, category):
