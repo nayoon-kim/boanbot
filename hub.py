@@ -1,4 +1,4 @@
-import tasks
+from _redis import Redis
 import json
 from crawler import Crawler
 
@@ -9,14 +9,13 @@ class Hub:
     category_in_googlezeroprojects = {"구글제로프로젝트": ""}
 
     crawler = Crawler()
+    redis = Redis()
 
-    def redis_get(self, category):
-        return tasks.REDIS.get(category)
-    def redis_set(self, category, result):
-        tasks.REDIS.set(category, json.dumps(result, ensure_ascii=False))
     def distribute(self, category):
-        result = self.diverge(category) if not self.redis_get(category) else self.redis_get(category)
-        if not self.redis_get(category): self.redis_set(category, result)
+        result = self.diverge(category) if not self.redis.get(category) else self.redis.get(category)
+
+        if not self.redis.get(category): self.redis.set(category, result)
+
         return result
 
     def diverge(self, category):
