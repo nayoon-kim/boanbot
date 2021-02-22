@@ -1,11 +1,11 @@
-import _redis
+import redis
 import json
 
 class Redis:
     def __init__(self):
-        self.REDIS = _redis.Redis(host="redis", port=6379, db=1, decode_responses=True)
+        self.REDIS = redis.Redis(host="redis", port=6379, db=1, decode_responses=True)
         self.REDIS.flushdb()
-        print("-------------------REDIS START-------------------\nREDIS PING:\n PONG(", REDIS.ping(), ")")
+        print("-------------------REDIS START-------------------\nREDIS PING:\n PONG(", self.ping(), ")")
 
     def get(self, key):
         return self.REDIS.get(key)

@@ -3,38 +3,44 @@ from utils import dateFormat
 import requests
 
 class Crawler:
-    boannews_url = "https://www.boannews.com/"
-    dailysecu_url = "https://www.dailysecu.com/news/articleList.html"
-    wired_url = "https://www.wired.com/"
-    def boannews_(self, url, full_path=False):
-        return "https://www.boannews.com/" + url if not full_path else url
-    def dailysecu_(self, url, full_path=False):
-        return "https://www.dailysecu.com/news/articleList.html" + url if not full_path else url
-    def wired_(self, url, full_path=False):
-        return "https://www.wired.com/" + url if not full_path else url
-    def googlezeroprojects_(self, url, full_path=False):
-        return "https://googleprojectzero.blogspot.com/" + url if not full_path else url
+    def boannews_path(self, params="/"):
+        return "https://www.boannews.com" + params
+    def dailysecu_path(self, params="/"):
+        return "https://www.dailysecu.com/news/articleList.html" + params
+    def wired_path(self, params="/"):
+        return "https://www.wired.com" + params
+    def googlezeroprojects_path(self, params="/"):
+        return "https://googleprojectzero.blogspot.com" + params
+    def query_path(self, where, url, category):
+        path = ""
+        # boannews
+        if where == "boannews":
+            path = url + "?search=title&find=" + category.encode('euc-kr')
+        # dailysecu
+        elif where == "dailysecu":
+            path = url + "?sc_area=A&view_type=sm&sc_word=" + category
 
-    def boannews(self, url):
-        webpage = requests.get(self.boannews_(url))
+        return path
+    def boannews(self, params):
+        webpage = requests.get(self.boannews_path(params))
         soup = BeautifulSoup(webpage.text, "html.parser")
 
         news = soup.select('div.news_list')
-        print(self.boannews_(url))
+        print(self.boannews_path(params))
         result = list()
         for n in news:
             result.append({
                 "title": n.select("span.news_txt")[0].text,
-                "link": self.boannews_url + n.find("a")['href'],
-                "img": self.boannews_url + n.find("img")["src"] if n.find("img") is not None else "",
+                "link": self.boannews_path(n.find("a")['href']),
+                "img": self.boannews_path(n.find("img")["src"] if n.find("img") is not None else ""),
                 "author": n.select("span.news_writer")[0].text.split(' | ')[0],
                 "date": n.select("span.news_writer")[0].text.split(' | ')[1]
             })
 
         return result
 
-    def dailysecu(self, url):
-        webpage = requests.get(self.dailysecu_(url))
+    def dailysecu(self, params):
+        webpage = requests.get(self.dailysecu_path(params))
         soup = BeautifulSoup(webpage.text, "html.parser")
 
         news = soup.select('div.list-block')
@@ -43,16 +49,16 @@ class Crawler:
         for n in news:
             result.append({
                 "title": n.select_one("div.list-titles").text,
-                "link": self.dailysecu_url + n.select_one("div.list-titles a")["href"],
-                "img": self.dailysecu_url + '.'.join(n.select_one("div.list-image")["style"].split('.')[1:3]) if n.select_one("div.list-image") is not None else "",
+                "link": self.dailysecu_path(n.select_one("div.list-titles a")["href"]),
+                "img": self.dailysecu_path('.'.join(n.select_one("div.list-image")["style"].split('.')[1:3]) if n.select_one("div.list-image") is not None else ""),
                 "author": n.select_one("div.list-dated").text.split(' | ')[1],
                 "date": dateFormat(n.select_one("div.list-dated").text.split(' | ')[2])
             })
 
         return result
 
-    def wired(self, url):
-        webpage = requests.get(self.wired_(url))
+    def wired(self, params):
+        webpage = requests.get(self.wired_path(params))
         soup = BeautifulSoup(webpage.text, "html.parser")
 
         news = soup.select("div.primary-grid-component div.card-component")
@@ -60,18 +66,21 @@ class Crawler:
         result = list()
         for n in news:
             description = n.select_one('li.card-component__description')
+            print(description)
+            print(self.wired_path(description.select_one('a')['href']))
             result.append({
                 "title": description.select_one('a h2').text,
-                "link": self.wired_url + description.select_one('a')['href'],
+                "link": self.wired_path(description.select_one('a')['href']),
                 "img": n.select_one('li.card-component__image').select_one('div.image-group-component img')['src'],
                 "author": description.select_one('a.byline-component__link').text,
-                "date": self.wired_date(self.wired_url + description.select_one('a')['href']),
+                "date": self.wired_date(self.wired_path(description.select_one('a')['href'])),
             })
 
         return result
 
-    def wired_date(self, url):
-        _soup = BeautifulSoup(requests.get(url).text, "html.parser")
+    def wired_date(self, path):
+        _soup = BeautifulSoup(requests.get(path).text, "html.parser")
+        print(_soup)
         date = _soup.select_one("div.content-header__row.content-header__title-block time").text
 
         # 시간 포맷
@@ -84,8 +93,8 @@ class Crawler:
         return "%s년 %s월 %s일 %s:%s" % (y, m, d, h, _m)
 
     # News and updates from the Project Zero team at Google
-    def googlezeroprojects(self, url):
-        webpage = requests.get(self.googlezeroprojects_(url))
+    def googlezeroprojects(self, params):
+        webpage = requests.get(self.googlezeroprojects_path(params))
         soup = BeautifulSoup(webpage.text, "html.parser")
 
         result = list()
@@ -97,14 +106,3 @@ class Crawler:
             "date": soup.select_one('h2.date-header span').text,
         })
         return result
-
-    def query_(self, where, url, category):
-        path = ""
-        # boannews
-        if where == "boannews":
-            path = url + "?search=title&find=" + category.encode('euc-kr')
-        # dailysecu
-        elif where == "dailysecu":
-            path = url + "?sc_area=A&view_type=sm&sc_word=" + category
-
-        return path
