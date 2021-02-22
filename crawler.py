@@ -66,8 +66,6 @@ class Crawler:
         result = list()
         for n in news:
             description = n.select_one('li.card-component__description')
-            print(description)
-            print(self.wired_path(description.select_one('a')['href']))
             result.append({
                 "title": description.select_one('a h2').text,
                 "link": self.wired_path(description.select_one('a')['href']),
@@ -80,7 +78,6 @@ class Crawler:
 
     def wired_date(self, path):
         _soup = BeautifulSoup(requests.get(path).text, "html.parser")
-        print(_soup)
         date = _soup.select_one("div.content-header__row.content-header__title-block time").text
 
         # 시간 포맷
