@@ -6,7 +6,7 @@ class Crawler:
     def boannews_path(self, params=""):
         return "https://www.boannews.com" + params
     def dailysecu_path(self, params=""):
-        return "https://www.dailysecu.com/news/articleList.html" + params
+        return "https://www.dailysecu.com" + params
     def wired_path(self, params=""):
         return "https://www.wired.com" + params
     def googlezeroprojects_path(self, params=""):
@@ -16,11 +16,11 @@ class Crawler:
         # boannews
         if where == "보안뉴스":
             params = {"search": "title", "find": find.encode('euc-kr')}
-            q_path = "?" + (requests.get(self.boannews_path(path), params).url).split('?')[1]
+            q_path = path + "?" + (requests.get(self.boannews_path(path), params).url).split('?')[1]
         # dailysecu
         elif where == "데일리시큐":
             params = {"sc_area": "A", "view_type": "sm", "sc_word": find}
-            q_path = "?" + (requests.get(self.dailysecu_path(path), params).url).split('?')[1]
+            q_path = path + "?" + (requests.get(self.dailysecu_path(path), params).url).split('?')[1]
 
         return q_path
 
