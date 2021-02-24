@@ -71,9 +71,13 @@ class Messages:
 
   - quickReplies는 바로가기 응답으로, 사용자가 직접 발화를 입력하지 않아도 선택을 통해서 발화를 전달하거나 다른 블록을 호출할 수 있도록 화면에 선택지를 표시합니다. 따라서 카카오톡 챗봇 '바로가기 응답' 포맷에 맞춰서 값을 리턴해준다.
 
+<img src="https://user-images.githubusercontent.com/53392870/108976071-80203d80-76ca-11eb-9900-dccbd11ffc17.png">
+
 (2) basicCard_keywords에 속하는 발화내용을 입력하였을 경우, distribute 함수 호출 후 결과값을 basicCard 함수에 파라미터로 넣어준다.
 
   - basicCard는 기본 카드형 출력 요소로 뉴스 기사의 제목, 썸네일 이미지, 링크, 작성일자, 기자 이름의 정보를 제공합니다. basicCard의 경우 quickReplies와 달리 발화내용(utterance)에 따라 출력값이 달라져야 하기 때문에 data를 파라미터로 받아 카카오톡 챗봇 '기본 카드형' 포맷에 맞춰 입력한 다음 값을 리턴해준다.
+
+<img src="https://user-images.githubusercontent.com/53392870/108976279-b52c9000-76ca-11eb-8495-04b9df5ca2fc.png">
 
 (3) quickReplies_keywords 혹은 basicCard_keywords가 아닐 경우, 뉴스 사이트에서 해당 발화내용(utterance)로 검색을 진행하게 된다. 
 
@@ -150,7 +154,7 @@ class Hub:
         return result
      ...
   ```
-  
+  <img src="https://user-images.githubusercontent.com/53392870/108976468-e1e0a780-76ca-11eb-9db3-c2cae8b9f02d.png">
  
  ## 유튜브 영상
  
