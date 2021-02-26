@@ -157,5 +157,4 @@ class Hub:
   <img src="https://user-images.githubusercontent.com/53392870/108976468-e1e0a780-76ca-11eb-9db3-c2cae8b9f02d.png">
  
  ## 유튜브 영상
-  <iframe width="560" height="315" src="https://youtu.be/4UW37nTMZ2A" frameborder="0" allowfullscreen></iframe>
-  
+  https://youtu.be/4UW37nTMZ2A  
