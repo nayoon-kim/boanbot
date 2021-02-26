@@ -15,7 +15,7 @@ class Hub:
     def distribute(self, category):
         result = self.diverge(category) if not self.redis.get(category) else json.loads(self.redis.get(category))
 
-        if not self.redis.get(category): self.redis.set(category, result)
+        if result != [] and not self.redis.get(category): self.redis.set(category, result)
 
         return result
 
