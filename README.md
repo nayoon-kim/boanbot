@@ -252,7 +252,38 @@ basicCard_keywords = ['주의 이슈', '다크웹', '사건사고', '취약점 �
 (2) crawler.py에서 query_path에 새로 등록하고자 하는 사이트에 대한 코드를 추가하고 새로 등록하는 사이트에서 원하는 데이터를 추출하는 크롤링 코드를 추가한다. result list에 "title", "link", "img", "author", "date"의 dictionary를 넣는다.
 ```python
 # crawler.py
+# (1) query_path에 새로 등록하고자 하는 사이트에 대한 코드를 추가
+    def query_path(self, where, path, find):
+        q_path = ""
+        # boannews
+        if where == "보안뉴스":
+            params = {"search": "title", "find": find.encode('euc-kr')}
+            q_path = path + "?" + (requests.get(self.boannews_path(path), params).url).split('?')[1]
+        # dailysecu
+        elif where == "데일리시큐":
+            params = {"sc_area": "A", "view_type": "sm", "sc_word": find}
+            q_path = path + "?" + (requests.get(self.dailysecu_path(path), params).url).split('?')[1]
 
+        return q_path
+ # (2) 새로 등록하는 사이트에서 원하는 데이터를 추출하는 크롤링 코드를 추가
+ 
+    def boannews(self, params):
+        webpage = requests.get(self.boannews_path(params))
+        soup = BeautifulSoup(webpage.text, "html.parser")
+
+        news = soup.select('div.news_list')
+        print(self.boannews_path(params))
+        result = list()
+        for n in news:
+            result.append({
+                "title": n.select("span.news_txt")[0].text,
+                "link": self.boannews_path(n.find("a")['href']),
+                "img": self.boannews_path(n.find("img")["src"] if n.find("img") is not None else ""),
+                "author": n.select("span.news_writer")[0].text.split(' | ')[0],
+                "date": n.select("span.news_writer")[0].text.split(' | ')[1]
+            })
+
+        return result
 ```
  ## 유튜브 영상
   https://youtu.be/4UW37nTMZ2A  
