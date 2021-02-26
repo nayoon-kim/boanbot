@@ -266,7 +266,7 @@ basicCard_keywords = ['주의 이슈', '다크웹', '사건사고', '취약점 �
 
         return q_path
  # (2) 새로 등록하는 사이트에서 원하는 데이터를 추출하는 크롤링 코드를 추가
- 
+ # 예. 보안뉴스
     def boannews(self, params):
         webpage = requests.get(self.boannews_path(params))
         soup = BeautifulSoup(webpage.text, "html.parser")
