@@ -16,7 +16,6 @@ def crawling_process():
     
     if not redis.isEmpty():
         for keyword in redis.keys():
-            print(keyword)
             result = hub.diverge(keyword)
             redis.set(keyword, result)
     else:

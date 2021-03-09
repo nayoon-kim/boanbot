@@ -13,9 +13,13 @@ class Hub:
     redis = Redis()
 
     def distribute(self, category):
-        result = self.diverge(category) if not self.redis.get(category) else json.loads(self.redis.get(category))
-
-        if result != [] and not self.redis.get(category): self.redis.set(category, result)
+        if not self.redis.get(category):
+            print(category)
+            result = self.diverge(category)
+            if result != []:
+                self.redis.set(category, result)
+        else:
+            result = json.loads(self.redis.get(category))
 
         return result
 

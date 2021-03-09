@@ -5,6 +5,7 @@ class Redis:
     def __init__(self):
         self.REDIS = redis.Redis(host="redis", port=6379, db=1, decode_responses=True)
         self.REDIS.flushdb()
+
         print("-------------------REDIS START-------------------\nREDIS PING:\n PONG(", self.REDIS.ping(), ")")
 
     def get(self, key):
