@@ -155,6 +155,135 @@ class Hub:
      ...
   ```
   <img src="https://user-images.githubusercontent.com/53392870/108976468-e1e0a780-76ca-11eb-9db3-c2cae8b9f02d.png">
+  
+ ## 사이트 추가
  
+ 다음과 같은 basicCard 템플릿을 띄우기 위해서는 표시하고자 하는 뉴스 기사의 "title", "link", "img", "author", "date" 정보를 list형태로 정리해야한다.
+ 
+  <img src="https://user-images.githubusercontent.com/53392870/108976468-e1e0a780-76ca-11eb-9db3-c2cae8b9f02d.png">
+
+ 새로 등록할 사이트를 사용하는 방법은 크게 두 가지이다.
+ - 새로 등록할 사이트를 카테고리로 basicCard에 등록해서 바로가기 응답에 표시하는 방법
+ - 새로 등록할 사이트에서 검색을 진행하고 검색 결과를 가져오는 방법
+
+1. 새로 등록할 사이트를 카테고리로 basicCard에 등록해서 바로가기 응답에 표시하는 방법
+(1) utils.py 에서 basicCard_keywords에 새 카테고리를 입력한다.
+```python
+# utils.py
+...
+basicCard_keywords = ['주의 이슈', '다크웹', '사건사고', '취약점 경고 및 버그리포트', '주간 핫 뉴스', '최신 보안 뉴스', '올해 보안 전망', '의료 보안', '해외 보안 뉴스(영어)', '구글제로프로젝트', '해외 보안 뉴스(한글)', ]
+```
+(2) hub.py에서 category_in_(새로 등록할 사이트의 이름)으로 딕셔너리(dictionary)를 하나 생성하고 해당 리스트에 등록하고자 하는 사이트의 카테고리를 key, path를 value로 등록한다. 그리고 diverge 함수에서 카테고리에 따른 사이트로 분기할 수 있도록 if문을 등록한다.
+
+```python
+# hub.py
+...
+# 예. 보안 뉴스의 "최신 보안 뉴스" 카테고리를 추가한다고 했을 때, 크롤링하는 사이트의 url은 "https://www.boannews.com/media/t_list.asp"과 같다.
+# 1. category_in_boannews를 생성하고, 다음과 같이 작성한다.
+    category_in_boannews = {"최신 보안 뉴스": "/media/t_list.asp"}
+
+# 2. diverge 함수에 등록한다.
+    def diverge(self, category):
+        result = ""
+        if category in self.category_in_boannews:
+            result = self.crawler.boannews(self.category_in_boannews[category])
+        elif category in self.category_in_dailysecu:
+            result = self.crawler.dailysecu(self.category_in_dailysecu[category])
+        elif category in self.category_in_wired:
+            result = self.crawler.wired(self.category_in_wired[category])
+        elif category in self.category_in_googlezeroprojects:
+            result = self.crawler.googlezeroprojects(self.category_in_googlezeroprojects[category])
+        else:
+            if self.query_site == "보안뉴스":
+                result = self.crawler.boannews(self.crawler.query_path("보안뉴스", self.category_in_boannews["query"], category))
+            elif self.query_site == "데일리시큐":
+                result = self.crawler.dailysecu(self.crawler.query_path("데일리시큐", self.category_in_dailysecu["query"], category))
+        return result
+```
+(3) crawler.py에서 새로 등록하는 사이트에서 원하는 데이터를 추출하는 크롤링 코드를 추가한다. result list에 "title", "link", "img", "author", "date"의 dictionary를 넣는다.
+```python
+# crawler.py
+# 예. 보안뉴스 사이트
+    def boannews(self, params):
+        webpage = requests.get(self.boannews_path(params))
+        soup = BeautifulSoup(webpage.text, "html.parser")
+
+        news = soup.select('div.news_list')
+        print(self.boannews_path(params))
+        result = list()
+        for n in news:
+            result.append({
+                "title": n.select("span.news_txt")[0].text,
+                "link": self.boannews_path(n.find("a")['href']),
+                "img": self.boannews_path(n.find("img")["src"] if n.find("img") is not None else ""),
+                "author": n.select("span.news_writer")[0].text.split(' | ')[0],
+                "date": n.select("span.news_writer")[0].text.split(' | ')[1]
+            })
+
+        return result
+```
+2. 새로 등록할 사이트에서 검색을 진행하고 검색 결과를 가져오는 방법
+(1) hub.py에서 category_in_(새로 등록할 사이트의 이름)으로 딕셔너리(dictionary)를 하나 생성하고 key는 query로 설정하고 path를 value로 등록한다. 그리고 diverge 함수에서 else에 새로 등록하는 사이트의 이름을 등록한다.
+```python
+# hub.py
+# 예. 보안뉴스
+# 1. category_in_boannews를 생성하고 query를 key로 query path를 value로 등록한다.
+    category_in_boannews = {"query": "/search/news_total.asp"}
+# 2. else 부분은 사이트마다의 검색 기능을 위한 부분으로 elif self.query_site == "(새로 등록하고자 하는 사이트 이름)"을 작성하고 아래와 같이 작성하면 된다.
+# (query_site를 무엇으로 정했느냐에 따라 검색을 진행하는 사이트가 달라진다.)
+    query_site = "보안뉴스"
+    def diverge(self, category):
+        result = ""
+        if category in self.category_in_boannews:
+            result = self.crawler.boannews(self.category_in_boannews[category])
+        elif category in self.category_in_dailysecu:
+            result = self.crawler.dailysecu(self.category_in_dailysecu[category])
+        elif category in self.category_in_wired:
+            result = self.crawler.wired(self.category_in_wired[category])
+        elif category in self.category_in_googlezeroprojects:
+            result = self.crawler.googlezeroprojects(self.category_in_googlezeroprojects[category])
+        else:
+            if self.query_site == "보안뉴스":
+                result = self.crawler.boannews(self.crawler.query_path("보안뉴스", self.category_in_boannews["query"], category))
+            elif self.query_site == "데일리시큐":
+                result = self.crawler.dailysecu(self.crawler.query_path("데일리시큐", self.category_in_dailysecu["query"], category))
+        return result
+```
+(2) crawler.py에서 query_path에 새로 등록하고자 하는 사이트에 대한 코드를 추가하고 새로 등록하는 사이트에서 원하는 데이터를 추출하는 크롤링 코드를 추가한다. result list에 "title", "link", "img", "author", "date"의 dictionary를 넣는다.
+```python
+# crawler.py
+# (1) query_path에 새로 등록하고자 하는 사이트에 대한 코드를 추가
+    def query_path(self, where, path, find):
+        q_path = ""
+        # boannews
+        if where == "보안뉴스":
+            params = {"search": "title", "find": find.encode('euc-kr')}
+            q_path = path + "?" + (requests.get(self.boannews_path(path), params).url).split('?')[1]
+        # dailysecu
+        elif where == "데일리시큐":
+            params = {"sc_area": "A", "view_type": "sm", "sc_word": find}
+            q_path = path + "?" + (requests.get(self.dailysecu_path(path), params).url).split('?')[1]
+
+        return q_path
+ # (2) 새로 등록하는 사이트에서 원하는 데이터를 추출하는 크롤링 코드를 추가
+ # 예. 보안뉴스
+    def boannews(self, params):
+        webpage = requests.get(self.boannews_path(params))
+        soup = BeautifulSoup(webpage.text, "html.parser")
+
+        news = soup.select('div.news_list')
+        print(self.boannews_path(params))
+        result = list()
+        for n in news:
+            result.append({
+                "title": n.select("span.news_txt")[0].text,
+                "link": self.boannews_path(n.find("a")['href']),
+                "img": self.boannews_path(n.find("img")["src"] if n.find("img") is not None else ""),
+                "author": n.select("span.news_writer")[0].text.split(' | ')[0],
+                "date": n.select("span.news_writer")[0].text.split(' | ')[1]
+            })
+
+        return result
+```
  ## 유튜브 영상
   https://youtu.be/4UW37nTMZ2A  
