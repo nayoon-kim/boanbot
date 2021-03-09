@@ -3,6 +3,8 @@ from utils import basicCard_keywords
 import json
 from _redis import Redis
 
+redis = Redis()
+
 @task(name="say_hello")
 def say_hello():
     print("Hello, celery")
@@ -11,10 +13,10 @@ def say_hello():
 def crawling_process():
     from hub import Hub
     hub = Hub()
-    redis = Redis()
-
+    
     if not redis.isEmpty():
         for keyword in redis.keys():
+            print(keyword)
             result = hub.diverge(keyword)
             redis.set(keyword, result)
     else:
