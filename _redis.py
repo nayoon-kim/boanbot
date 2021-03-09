@@ -15,3 +15,11 @@ class Redis:
             self.REDIS.set(key, json.dumps(value, ensure_ascii=False))
         else:
             self.REDIS.set(key, value)
+
+    def isEmpty(self):
+        if self.REDIS.dbsize() > 0:
+            return False
+        return True
+
+    def keys(self, pattern='*'):
+        return self.REDIS.keys(pattern=pattern)
