@@ -19,7 +19,7 @@ class Hub:
             if result != []:
                 self.redis.set(category, result)
         else:
-            result = json.loads(self.redis.get(category))
+            result = self.redis.get(category)
 
         return result
 
