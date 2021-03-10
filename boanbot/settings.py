@@ -149,16 +149,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Cache
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
-}
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -169,7 +159,6 @@ ALLOWED_HOSTS = [
 ]
 
 CELERY_BROKER_URL='redis://redis:6379/0'
-CELERY_RESULT_BACKEND='redis://redis:6379/1'
 CELERY_ACCEPT_CONTENT=['application/json']
 CELERY_TASK_SERIALIZER='json'
 CELERY_RESULT_SERIALIZER='json'
