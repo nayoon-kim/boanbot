@@ -1,4 +1,4 @@
-from _redis import Redis
+from _redis import redis
 import json
 from crawler import Crawler
 
@@ -10,7 +10,6 @@ class Hub:
     query_site = "보안뉴스"
 
     crawler = Crawler()
-    redis = Redis()
 
     def distribute(self, category):
         if not self.redis.get(category):

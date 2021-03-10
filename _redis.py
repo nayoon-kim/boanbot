@@ -1,26 +1,22 @@
-import redis
 import json
+from django_redis import cache
+
 
 class Redis:
     def __init__(self):
-        self.REDIS = redis.Redis(host="redis", port=6379, db=1, decode_responses=True)
-        self.REDIS.flushdb()
-
-        print("-------------------REDIS START-------------------\nREDIS PING:\n PONG(", self.REDIS.ping(), ")")
+        cache.flushdb()
+        print("-------------------REDIS START-------------------\nREDIS PING:\n PONG(", cache.ping(), ")")
 
     def get(self, key):
-        return json.loads(self.REDIS.get(key))
+        return json.loads(cache.get(key))
 
     def set(self, key, value):
         if str(type(value)) == "<class 'list'>":
-            self.REDIS.set(key, json.dumps(value, ensure_ascii=False))
+            cache.set(key, json.dumps(value, ensure_ascii=False))
         else:
-            self.REDIS.set(key, value)
-
-    def isEmpty(self):
-        if self.REDIS.dbsize() > 0:
-            return False
-        return True
+            cache.set(key, value)
 
     def keys(self, pattern='*'):
-        return self.REDIS.keys(pattern=pattern)
+        return cache.keys(pattern=pattern)
+
+redis = Redis()

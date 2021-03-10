@@ -1,9 +1,7 @@
 from celery.decorators import task
 from utils import basicCard_keywords
 import json
-from _redis import Redis
-
-redis = Redis()
+from _redis import redis
 
 @task(name="say_hello")
 def say_hello():
@@ -14,7 +12,7 @@ def crawling_process():
     from hub import Hub
     hub = Hub()
     
-    if not redis.isEmpty():
+    if redis.keys() > 0:
         print(redis.keys())
         for keyword in redis.keys():
             result = hub.diverge(keyword)
