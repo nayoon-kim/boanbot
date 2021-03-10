@@ -53,7 +53,7 @@ class Crawler:
             result.append({
                 "title": n.select_one("div.list-titles").text,
                 "link": self.dailysecu_path(n.select_one("div.list-titles a")["href"]),
-                "img": self.dailysecu_path("/news" + '.'.join(n.select_one("div.list-image")["style"].split('.')[1:3]) if n.select_one("div.list-image") is not None else ""),
+                "img": self.dailysecu_path("/news" + ('.'.join(n.select_one("div.list-image")["style"].split('.')[1:2]) if n.select_one("div.list-image") is not None else "") + ".jpg"),
                 "author": n.select_one("div.list-dated").text.split(' | ')[1],
                 "date": dateFormat(n.select_one("div.list-dated").text.split(' | ')[2])
             })

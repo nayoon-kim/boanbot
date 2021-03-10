@@ -27,5 +27,6 @@ def crawling_process():
             
             # redis에는 key=keyword, value=list를 str로 바꿈(str이 아니면 에러가 남)
             redis.set(keyword, result)
+
             print(result)
             print(redis.get(keyword))
