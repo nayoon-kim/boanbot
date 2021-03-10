@@ -29,7 +29,7 @@ class Crawler:
         soup = BeautifulSoup(webpage.text, "html.parser")
 
         news = soup.select('div.news_list')
-        print(self.boannews_path(params))
+
         result = list()
         for n in news:
             result.append({

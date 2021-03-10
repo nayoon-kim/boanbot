@@ -18,15 +18,11 @@ def crawling_process():
         print(redis.keys())
         for keyword in redis.keys():
             result = hub.diverge(keyword)
-            
+            print(keyword, result)
             redis.set(keyword, result)
+
     else:
         for keyword in basicCard_keywords:
-
             result = hub.diverge(keyword)
-            
             # redis에는 key=keyword, value=list를 str로 바꿈(str이 아니면 에러가 남)
             redis.set(keyword, result)
-
-            print(result)
-            print(redis.get(keyword))
