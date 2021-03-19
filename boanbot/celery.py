@@ -15,7 +15,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule={
         'crawling_process-an-hour': {
             'task': 'crawling_process',
-            'schedule': timedelta(seconds=60),
+            'schedule': timedelta(seconds=600),
             'args': (),
         },
 }
