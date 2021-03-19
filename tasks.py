@@ -12,7 +12,7 @@ def crawling_process():
     from hub import Hub
     hub = Hub()
     
-    if redis.keys() > 0:
+    if len(redis.keys()) > 0:
         print(redis.keys())
         for keyword in redis.keys():
             result = hub.diverge(keyword)
