@@ -12,13 +12,13 @@ class Hub:
     crawler = Crawler()
 
     def distribute(self, category):
-        if not self.redis.get(category):
+        if not redis.get(category):
             print(category)
             result = self.diverge(category)
             if result != []:
-                self.redis.set(category, result)
+                redis.set(category, result)
         else:
-            result = self.redis.get(category)
+            result = redis.get(category)
 
         return result
 

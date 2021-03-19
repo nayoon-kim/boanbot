@@ -20,6 +20,7 @@ class Messages:
             templates = self.templates.basicCard(data)
         # 위의 키워드에 포함되지 않는 경우 검색
         else:
+            print("client_utterance for query:", client_utterance)
             valid_check = self.hub.distribute(client_utterance)
             templates = self.templates.basicCard(valid_check) if valid_check != [] else self.templates.quickReplies()
 
