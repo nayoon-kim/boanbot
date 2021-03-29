@@ -24,21 +24,16 @@ class Hub:
     def diverge(self, category):
         result = ""
         if category in self.category_in_boannews:
-            # result = self.crawler.boannews(self.category_in_boannews[category])
-            result = tasks.crawler_boannews_task(self.category_in_boannews[category]).delay(5)
+            result = self.crawler.boannews(self.category_in_boannews[category])
         elif category in self.category_in_dailysecu:
-            # result = self.crawler.dailysecu(self.category_in_dailysecu[category])
-            result = tasks.crawler_dailysecu_task(self.category_in_dailysecu[category]).delay(5)
+            result = self.crawler.dailysecu(self.category_in_dailysecu[category])
         elif category in self.category_in_wired:
-            # result = self.crawler.wired(self.category_in_wired[category])
-            result = tasks.crawler_wired_task(self.category_in_wired[category]).delay(5)
+            result = self.crawler.wired(self.category_in_wired[category])
         elif category in self.category_in_googlezeroprojects:
             result = self.crawler.googlezeroprojects(self.category_in_googlezeroprojects[category])
         else:
             if self.query_site == "보안뉴스":
-                # result = self.crawler.boannews(self.crawler.query_path("보안뉴스", self.category_in_boannews["query"], category))
-                result = tasks.crawler_boannews_task(self.crawler.query_path("보안뉴스", self.category_in_boannews["query"], category)).delay(5)
+                result = self.crawler.boannews(self.crawler.query_path("보안뉴스", self.category_in_boannews["query"], category))
             elif self.query_site == "데일리시큐":
-                # result = self.crawler.dailysecu(self.crawler.query_path("데일리시큐", self.category_in_dailysecu["query"], category))
-                result = tasks.crawler_dailysecu_task(self.crawler.query_path("데일리시큐", self.category_in_dailysecu["query"], category)).delay(5)
+                result = self.crawler.dailysecu(self.crawler.query_path("데일리시큐", self.category_in_dailysecu["query"], category))
         return result
