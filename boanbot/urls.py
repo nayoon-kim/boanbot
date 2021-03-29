@@ -22,6 +22,3 @@ from boanbot import settings
 urlpatterns = [
     path('call/', views.callApi),
 ]
-
-urlpatterns += \
-    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

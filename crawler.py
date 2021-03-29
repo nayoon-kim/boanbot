@@ -24,6 +24,7 @@ class Crawler:
 
         return q_path
 
+    # boannews
     def boannews(self, params):
         webpage = requests.get(self.boannews_path(params))
         soup = BeautifulSoup(webpage.text, "html.parser")
@@ -42,6 +43,7 @@ class Crawler:
 
         return result
 
+    # dailysecu
     def dailysecu(self, params):
         webpage = requests.get(self.dailysecu_path(params))
         soup = BeautifulSoup(webpage.text, "html.parser")
@@ -60,6 +62,7 @@ class Crawler:
 
         return result
 
+    # wired
     def wired(self, params):
         webpage = requests.get(self.wired_path(params))
         soup = BeautifulSoup(webpage.text, "html.parser")

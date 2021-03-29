@@ -6,10 +6,6 @@ from crawler import Crawler
 
 crawler = Crawler()
 
-@task(name="say_hello")
-def say_hello():
-    print("Hello, celery")
-
 @task(name="crawling_process")
 def crawling_process():
     from hub import Hub
