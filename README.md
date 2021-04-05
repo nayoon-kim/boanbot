@@ -171,16 +171,16 @@ class Hub:
 ```python
 # utils.py
 ...
-basicCard_keywords = ['주의 이슈', '다크웹', '사건사고', '취약점 경고 및 버그리포트', '주간 핫 뉴스', '최신 보안 뉴스', '올해 보안 전망', '의료 보안', '해외 보안 뉴스(영어)', '구글제로프로젝트', '해외 보안 뉴스(한글)', ]
+basicCard_keywords = ['보안뉴스', '데일리시큐', '와이어드', '주의 이슈', '다크웹', '사건사고', '취약점 경고 및 버그리포트', '주간 핫 뉴스', '올해 보안 전망', '의료 보안', '구글제로프로젝트', '해외 보안 뉴스', ]
 ```
 (2) hub.py에서 category_in_(새로 등록할 사이트의 이름)으로 딕셔너리(dictionary)를 하나 생성하고 해당 리스트에 등록하고자 하는 사이트의 카테고리를 key, path를 value로 등록한다. 그리고 diverge 함수에서 카테고리에 따른 사이트로 분기할 수 있도록 if문을 등록한다.
 
 ```python
 # hub.py
 ...
-# 예. 보안 뉴스의 "최신 보안 뉴스" 카테고리를 추가한다고 했을 때, 크롤링하는 사이트의 url은 "https://www.boannews.com/media/t_list.asp"과 같다.
+# 예. 보안 뉴스의 "주간 핫 뉴스" 카테고리를 추가한다고 했을 때, 크롤링하는 사이트의 url은 "https://www.boannews.com/media/o_list.asp"과 같다.
 # 1. category_in_boannews를 생성하고, 다음과 같이 작성한다.
-    category_in_boannews = {"최신 보안 뉴스": "/media/t_list.asp"}
+    category_in_boannews = {"주간 핫 뉴스": "/media/o_list.asp"}
 
 # 2. diverge 함수에 등록한다.
     def diverge(self, category):

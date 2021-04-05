@@ -14,7 +14,7 @@ class Messages:
         # quickReplies_keywords = ['보안', '안내', '키워드']
         if client_utterance in quickReplies_keywords:
             templates = self.templates.quickReplies()
-        # basicCard_keywords = ['주의 이슈', '다크웹', '사건사고', '취약점 경고 및 버그리포트', '주간 핫 뉴스', '최신 보안 뉴스', '올해 보안 전망', '의료 보안', '해외 보안 뉴스(영어)', '구글제로프로젝트', '해외 보안 뉴스(한글)', ]
+        # basicCard_keywords = ['보안뉴스', '데일리시큐', '와이어드', '주의 이슈', '다크웹', '사건사고', '취약점 경고 및 버그리포트', '주간 핫 뉴스', '올해 보안 전망', '의료 보안', '구글제로프로젝트', '해외 보안 뉴스', ]
         elif client_utterance in basicCard_keywords:
             data = self.hub.distribute(client_utterance)
             templates = self.templates.basicCard(data)
